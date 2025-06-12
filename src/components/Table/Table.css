@@ -1,0 +1,89 @@
+
+.universal-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--card-background);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.universal-table thead {
+    background-color: var(--primary-color);
+    color: var(--background-color);
+    user-select: none;
+}
+
+.universal-table thead th {
+    padding: 14px 20px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.universal-table tbody tr {
+    border-bottom: 1px solid var(--border-color);
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.universal-table tbody tr:hover {
+    background-color: rgba(var(--primary-color-rgb), 0.15);
+    color: var(--primary-color);
+}
+
+.universal-table tbody td {
+    padding: 12px 20px;
+    font-size: 14px;
+    color: var(--text-color);
+    vertical-align: middle;
+}
+
+.universal-table tbody td.actions-cell {
+    text-align: right;
+    white-space: nowrap;
+}
+
+.universal-table .empty-message {
+    padding: 40px 0;
+    text-align: center;
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+.universal-table .loading-message {
+    padding: 40px 0;
+    text-align: center;
+    color: var(--primary-color-2);
+    font-weight: 600;
+}
+
+/* Кнопки действий внутри таблицы */
+.universal-table button {
+    background-color: var(--primary-color-2);
+    border: none;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+}
+
+.universal-table button:hover {
+    background-color: #e60040; /* чуть темнее */
+}
+
+.table-wrapper {
+    padding: 20px;
+    overflow-x: auto;
+}
+
+.table-loading,
+.table-empty {
+    padding: 40px 0;
+    text-align: center;
+    font-size: 16px;
+    color: var(--text-muted);
+}

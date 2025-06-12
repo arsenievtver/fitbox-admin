@@ -1,0 +1,19 @@
+.custom-button {
+    background-color: transparent;
+    border: 1px solid var(--primary-color);
+    color: var(--primary-color);
+    height: 35px;
+    padding: 0 10px;
+    font-size: 14px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.custom-button:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+    box-shadow: 0 0 3px var(--primary-color);
+}

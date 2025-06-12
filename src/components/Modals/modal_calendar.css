@@ -1,0 +1,121 @@
+.modal-date-label {
+    position: absolute;
+    top: 12px;
+    left: 16px;
+    margin: 0;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-color);
+    pointer-events: none;
+    opacity: 0.85;
+}
+
+.slot-item {
+    background-color: var(--background-color);
+    border-radius: 10px;
+    margin-bottom: 6px;
+    padding: 10px 14px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+/* flex только на первую строку */
+.slot-main {
+    display: flex;
+    flex: 1 1 auto;
+    justify-content: space-between;
+    align-items: center;
+
+}
+
+/* расширенная часть идёт в следующей строке */
+.slot-expanded {
+    margin-top: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--background-color);
+    padding: 10px;
+    border-radius: 8px;
+}
+
+/* стили для кнопки */
+.slot-expanded button {
+    background: var(--background-color);
+    padding: 8px 14px;
+    margin-left: 10px;
+    border-radius: 6px;
+    border: 1px solid var(--primary-color);
+    cursor: pointer;
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+
+.slot-item {
+
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 10px;
+    background-color: var(--background-color);
+    border-radius: 10px;
+    margin-bottom: 6px;
+    font-size: 16px;
+}
+
+.slot-time {
+    color: white;
+    background-color: var(--background-color);
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-weight: bold;
+}
+
+.slot-free {
+    color: var(--text-color);
+    font-weight: bold;
+    padding: 6px 10px;
+    background-color: var(--background-color);
+    border-radius: 50%;
+}
+
+.modal-slots {
+    width: 100%;
+    margin-top: 30px;
+    font-size: 16px;
+    color: var(--text-color);
+    flex: 1;
+    overflow-y: auto;
+}
+
+.modal-slots ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.modal-window-bottom {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 400px;
+    max-height: 400px;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    padding: 15px;
+    margin: 0 15px;
+    border: 1px solid;
+    border-top-color: var(--primary-color);
+    border-left-color: var(--primary-color);
+    border-right-color: var(--primary-color);
+    border-bottom-color: var(--border-color);
+    box-shadow: 0 -10px 20px rgba(0, 0, 0, 0.5);
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+    animation: slide-up 0.3s ease-in-out forwards;
+    overflow: hidden; /* предотвращает вылезание содержимого */
+}

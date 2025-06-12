@@ -1,0 +1,49 @@
+.phone-input-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    height: 35px;
+    border: 0 solid var(--primary-color); /* для визуального контроля */
+    border-radius: 10px;
+    padding: 0 10px;
+    background-color: transparent;
+    width: max(200px);
+    box-sizing: border-box;
+
+    transition: all 0.2s ease-in-out;
+}
+
+.phone-input-wrapper:focus-within {
+    background-color: rgba(255, 255, 255, 0.05);
+    box-shadow: 0 0 3px var(--primary-color);
+}
+
+.phone-prefix {
+    color: var(--primary-color);
+    font-size: 16px;
+    font-family: inherit;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+
+.phone-input {
+    background-color: transparent;
+    border: none;
+    color: var(--primary-color);
+    outline: none;
+    flex: 1;
+    font-size: 16px;
+    font-family: inherit;
+    line-height: 1;
+    height: 100%;
+    padding: 0;
+    margin: 0;
+}
+
+.phone-input::placeholder {
+    color: var(--primary-color);
+    opacity: 0.8;
+}

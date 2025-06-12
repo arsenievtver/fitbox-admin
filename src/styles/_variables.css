@@ -1,0 +1,15 @@
+/* _variables.css */
+:root {
+    --primary-color-3: #dbff07;       /* оставить — фирменный акцент для логотипов и небольших элеменов на темном фоне */
+    --primary-color-2: #FF075A;     /* оставить — для кнопок, подчёркиваний */
+    --primary-color: #781DFF;     /* основной фирменный стиль */
+    --primary-color-rgb: 0, 123, 255;
+
+    --background-color: #f9f9fb;    /* светлый фон */
+    --card-background: #ffffff;     /* фон карточек, панелей */
+    --text-color: #1f1f1f;          /* основной текст */
+    --text-muted: #5f5f5f;          /* второстепенный текст */
+    --border-color: #e0e0e0;        /* границы, делители */
+    --input-background: #f0f0f0;    /* поля ввода */
+    --input-border: #cccccc;        /* бордеры инпутов */
+}

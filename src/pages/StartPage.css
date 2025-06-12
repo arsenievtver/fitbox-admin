@@ -1,0 +1,117 @@
+.start-container {
+    position: relative;
+    width: 100%;
+    height: 100vh; /* чтобы занять весь экран */
+    overflow: hidden;
+    display: flex;
+    flex-direction: column; /* по умолчанию вертикально */
+}
+
+.background-wrapper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column; /* на мобиле - вертикально */
+    z-index: 0;
+}
+
+.background-wrapper > div {
+    flex: 1; /* обе картинки занимают поровну пространства */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+/* Первая картинка */
+.background1 {
+    background-image: url("/public/images/start-m.webp");
+    margin: 40px;
+    border-radius: 10px;
+}
+
+/* Вторая картинка */
+.background2 {
+    background-image: url("/public/images/start-w.webp");
+    margin: 40px;
+    border-radius: 10px;
+}
+
+/* Теперь медиа-запрос для больших экранов: фон по горизонтали */
+@media (min-width: 768px) {
+    .background-wrapper {
+        flex-direction: row; /* теперь рядом */
+    }
+}
+
+.start-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(33, 36, 43, 0.2);
+    z-index: 1;
+}
+
+.start-content {
+    position: relative;
+    z-index: 2;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 20px;
+}
+
+.start-top {
+    text-align: center;
+    position: relative;
+}
+
+.start-bottom {
+    position: absolute;
+    bottom: 0;
+    align-self: center;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-direction: column;
+    margin: 20px;
+}
+
+.start-button {
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    background-color: transparent;
+    color: var(--primary-color);
+    border: 1px solid var(--primary-color);
+    border-radius: 10px;
+    transition: all 0.3s ease;
+}
+
+.form-container {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-direction: column;
+    margin: 20px;
+}
+
+.back-button {
+    background: none;
+    border: none;
+    color: var(--primary-color);
+    font-size: 16px;
+    padding: 8px;
+}
+
+.back-button:hover {
+    text-decoration: none;
+    opacity: 0.8;
+}

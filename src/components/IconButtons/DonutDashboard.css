@@ -1,0 +1,60 @@
+.donut-dashboard {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: flex-end;
+    gap: 20px;
+    width: 100%;
+    background-color: var(--background-color);
+    padding: 10px;
+    border-radius: 10px;
+}
+
+.donut-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+}
+
+.donut-svg {
+    transform: rotate(-90deg);
+    overflow: visible;
+}
+
+.donut-bg {
+    stroke-dasharray: none;
+    stroke-linecap: round;
+}
+
+.donut-ring {
+    transition: stroke-dashoffset 0.5s ease;
+}
+
+.donut-center {
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -55%);
+    color: white;
+    font-weight: normal;
+    font-size: 16px;
+}
+
+.donut-label {
+    margin-top: 6px;
+    font-size: 14px;
+    color: white;
+    text-align: center;
+}
+
+.energy-container {
+    width: 100%;
+    padding: 16px;
+    box-sizing: border-box;
+}
+
+.energy-title {
+    color: white;
+    font-size: 20px;
+    margin-bottom: 16px;
+}

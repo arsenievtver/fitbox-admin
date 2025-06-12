@@ -1,0 +1,19 @@
+.video-wrapper {
+
+    text-align: center;
+}
+
+.video-title {
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #fff; /* Подстрой под фирменную цветовую схему */
+}
+
+.responsive-video {
+    width: 100%;
+    max-width: 800px;
+    height: auto;
+    border-radius: 12px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+}

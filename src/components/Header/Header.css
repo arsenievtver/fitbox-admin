@@ -1,0 +1,48 @@
+.app-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background-color: var(--input-background);
+    color: var(--text-color);
+}
+
+.header {
+    display: flex;
+    background-color: var(--background-color);
+    height: 70px;
+    justify-content: space-between;
+    align-items: center;
+    position: fixed;               /* Позиция фиксированная, не прокручивается */
+    top: 0;                       /* Прилеплен сверху */
+    left: 0;                      /* Начальная позиция слева */
+    right: 0;                     /* Расширяется вправо */
+    z-index: 1000;
+    margin-left: 0;
+    margin-right: 0;
+    padding: 0 40px;
+    border-bottom: 1px solid var(--primary-color) ;
+
+
+}
+
+.admin {
+    font-size: 14px;
+    cursor: pointer;
+    color: var(--primary-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.logo-container {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--primary-color); /* Фирменный цвет */
+    font-weight: bold;           /* Жирный шрифт */
+    font-size: 18px;             /* Размер шрифта */
+}
+

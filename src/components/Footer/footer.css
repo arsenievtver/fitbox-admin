@@ -1,0 +1,65 @@
+.navbar-container {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 80px;
+    background-color: var(--secondary-color);
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-start;
+    padding: 15px 15px; /* Отступы слева и справа, чтобы не уезжало */
+    margin: 0 10px;
+    z-index: 1000;
+    border-radius: 10px 10px 0 0;
+    box-sizing: border-box; /* чтобы padding учитывался в ширине */
+}
+
+.nav-item {
+    flex: 1;
+    display: flex;
+    justify-content: center;  /* Горизонтально */
+    align-items: center;      /* Вертикально */
+}
+
+.nav-icon {
+    width: 30px;
+    height: 30px;
+    stroke-width: 1.5; /* Толщина линии, если иконка в SVG использует stroke */
+    color: var(--text-color);
+    transition: color 0.2s ease-in-out;
+}
+
+.active .nav-icon {
+    color: var(--primary-color);
+}
+
+.nav-lightning {
+    position: relative;
+    top: -25px; /* чуть поднял, чтобы не так высоко */
+    width: 50px;
+    height: 60px;
+    border-radius: 20px;
+    background-color: var(--secondary-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 5px solid var(--background-color);
+    margin: 0 10px;
+    transition: transform 0.2s ease-in-out;
+}
+
+.nav-lightning .nav-icon {
+    width: 30px;
+    height: 30px;
+    stroke-width: 1.5;
+    margin-top: 0;
+}
+
+.nav-lightning.active {
+    transform: scale(1.1);
+}
+
+.nav-item.active {
+    transform: scale(1.1);
+}

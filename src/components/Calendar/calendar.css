@@ -1,0 +1,95 @@
+/* calendar.css */
+
+.slide-container {
+    width: 100%;
+    background-color: var(--secondary-color);
+    position: relative;
+    overflow: hidden;
+    align-content: center;
+    display: flex;                /* добавляем! */
+    align-items: stretch;
+    border-radius: 10px;
+}
+
+.calendar-wrapper {
+    flex-direction: column;     /* 💥 вот это ключевое */
+    align-items: center;
+    border-radius: 10px;
+    display: flex;
+    justify-content: flex-start;
+    width: 100%;
+}
+
+.calendar-week {
+    display: flex;
+    width: 100%;
+    flex-direction: row;
+    padding: 10px;
+    justify-content: space-between; /* 🔁 Можем оставить или заменить */
+    background-color: var(--secondary-color);
+    color: var(--text-color);
+    border-radius: 10px;
+    font-size: 16px;
+    flex-shrink: 0;
+}
+
+.calendar-day {
+    flex: 1 1 0; /* 🧠 Гарантирует равное распределение */
+    text-align: center;
+    font-size: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 0;  /* 🔒 Предотвращает переполнение */
+}
+
+.weekday-line {
+    font-size: 16px;
+    opacity: 0.8;
+    margin-bottom: 5px;
+}
+
+.date-circle {
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    line-height: 40px;
+    border-radius: 50%; /* Круглая форма */
+    border: 1px solid var(--background-color);
+    text-align: center;
+    vertical-align: middle;
+    font-size: 16px;
+}
+
+.today .date-circle {
+    border: 1px solid var(--primary-color);
+    background-color: var(--background-color);
+    color: var(--primary-color);
+}
+
+.today .weekday-line {
+    color: var(--primary-color);
+    font-weight: bold;
+}
+
+.active .date-circle {
+    border: 1px solid var(--primary-color);
+    background-color: var(--primary-color);
+    color: black;
+}
+
+.active .weekday-line {
+    color: var(--primary-color);
+    font-weight: bold;
+}
+
+.month-label {
+    text-align: center;
+    margin-top: 10px;
+    color: var(--text-color);
+    font-size: 14px;
+    text-transform: capitalize; /* Чтобы месяц был с заглавной */
+}
+
+
+

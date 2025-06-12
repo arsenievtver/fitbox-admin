@@ -1,0 +1,57 @@
+@keyframes modal-fade-in {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.modal-window-base {
+    background-color: var(--background-color);
+    border: 1px solid var(--primary-color);
+    border-radius: 10px;
+    max-width: 80%;
+    min-width: 50%;
+    padding: 20px;
+    box-sizing: border-box;
+    position: relative;
+    overflow-y: auto;
+    animation: modal-fade-in 0.3s ease-out;
+    transition: max-height 0.4s ease, padding 0.3s ease;
+}
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5); /* полупрозрачный тёмный фон */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+
+.modal-header {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+.modal-content {
+    display: flex;
+    margin-top: 30px; /* чтобы контент не залезал под кнопку закрытия */
+    flex-wrap: wrap;
+    gap: 15px; /* отступы между элементами */
+    justify-content: flex-start;
+}
+
+/* Пусть дети занимают минимум 200px, максимум 1fr */
+.modal-content > * {
+    flex: 1 1 200px; /* flex-grow:1, flex-shrink:1, flex-basis:200px */
+    min-width: 150px; /* или сколько нужно */
+}
