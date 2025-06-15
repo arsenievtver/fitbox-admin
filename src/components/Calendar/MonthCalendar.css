@@ -1,0 +1,129 @@
+/* ======= Обёртка страницы ======= */
+.schedule-page {
+    display: flex;
+    gap: 32px;
+    padding: 24px;
+    flex-wrap: nowrap; /* 🚫 запрещаем перенос */
+    justify-content: center;
+    align-items: flex-start;
+    box-sizing: border-box;
+    overflow-x: auto; /* 🔄 на всякий случай */
+}
+
+/* ======= Календарь ======= */
+.calendar-section {
+    flex: 0 0 auto;
+}
+
+/* ======= Таблица ======= */
+.table-section {
+    flex: 1 1 600px;
+    min-width: 300px;
+    background-color: var(--card-background);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* ======= Календарь: внешний вид ======= */
+.month-calendar {
+    display: flex;
+    flex-direction: column;
+    background-color: var(--card-background, #fff);
+    border: 1px solid var(--border-color, #e0e0e0);
+    border-radius: 12px;
+    padding: 1rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    width: 480px;
+    height: 480px; /* 📏 делаем почти квадратным */
+    box-sizing: border-box;
+}
+
+/* ======= Заголовок календаря ======= */
+.month-calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--text-color, #1f1f1f);
+}
+
+.month-calendar-header button {
+    background-color: transparent;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--primary-color, #781DFF);
+    transition: color 0.2s ease;
+}
+
+.month-calendar-header button:hover {
+    color: var(--primary-color-2, #FF075A);
+}
+
+/* ======= Сетка дней ======= */
+.month-calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    grid-template-rows: repeat(7, 1fr); /* 1 строка — дни недели, 6 — даты */
+    flex-grow: 1;
+    gap: 4px;
+}
+
+/* ======= Названия дней недели ======= */
+.month-day-label {
+    text-align: center;
+    font-weight: 600;
+    color: var(--text-muted, #5f5f5f);
+    padding: 4px 0;
+}
+
+/* ======= Ячейки с датами ======= */
+.month-calendar-cell {
+    text-align: center;
+    padding: 6px 0;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    user-select: none;
+    color: var(--text-color, #1f1f1f);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.month-calendar-cell:hover {
+    background-color: var(--input-background, #f0f0f0);
+}
+
+.not-current-month {
+    color: #bbb;
+}
+
+.today {
+    outline: 2px solid var(--primary-color-3, #dbff07);
+    outline-offset: -2px;
+    border-radius: 6px;
+}
+
+.selected {
+    background-color: var(--primary-color, #781DFF);
+    color: white;
+}
+
+.has-slots::after {
+    content: '';
+    position: absolute;
+    bottom: 4px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: var(--primary-color-2, #FF075A);
+}

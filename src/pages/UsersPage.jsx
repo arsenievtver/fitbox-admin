@@ -6,6 +6,7 @@ import UniversalTable from '../components/Table/Table';
 import { GetallusersUrl } from '../helpers/constants';
 import { FaFileAlt, FaEnvelope } from 'react-icons/fa';
 import './UsersPage.css';
+import { useNavigate } from "react-router-dom";
 
 const UsersPage = () => {
 	const api = useApi();
@@ -78,6 +79,8 @@ const UsersPage = () => {
 		),
 	}));
 
+	const navigate = useNavigate();
+
 	return (
 		<MainLayout>
 			<div style={{ padding: 20 }} className="table-wrapper">
@@ -87,7 +90,7 @@ const UsersPage = () => {
 					data={rows}
 					loading={loading}
 					emptyMessage="Пользователей не найдено"
-					onRowClick={(user) => alert(`Клик по пользователю с id ${user.id}`)}
+					onRowClick={(user) => navigate(`/user/${user.id}`)}
 				/>
 				{error && <div style={{ color: 'red', marginTop: 10 }}>{error}</div>}
 			</div>

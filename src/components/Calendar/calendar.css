@@ -2,7 +2,7 @@
 
 .slide-container {
     width: 100%;
-    background-color: var(--secondary-color);
+    background-color: var(--background-color);
     position: relative;
     overflow: hidden;
     align-content: center;
@@ -26,7 +26,7 @@
     flex-direction: row;
     padding: 10px;
     justify-content: space-between; /* 🔁 Можем оставить или заменить */
-    background-color: var(--secondary-color);
+    background-color: var(--background-color);
     color: var(--text-color);
     border-radius: 10px;
     font-size: 16px;

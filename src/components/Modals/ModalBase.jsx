@@ -1,10 +1,12 @@
+// src/components/Modals/ModalBase.jsx
+
 import React from 'react';
 import './ModalBase.css';
 import CloseButton from '../IconButtons/CloseButton';
 
-const Modal = ({ children, onClose, expanded }) => {
+const ModalBase = ({ children, onClose, expanded, className = '' }) => {
     return (
-        <div className="modal-overlay">
+        <div className={`modal-overlay ${className}`}>
             <div
                 className="modal-window-base"
                 style={{
@@ -24,5 +26,4 @@ const Modal = ({ children, onClose, expanded }) => {
     );
 };
 
-export default Modal;
-
+export default ModalBase;

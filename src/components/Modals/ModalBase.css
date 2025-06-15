@@ -25,6 +25,7 @@
 
 .modal-overlay {
     position: fixed;
+    flex-direction: column;
     top: 0;
     left: 0;
     width: 100vw;

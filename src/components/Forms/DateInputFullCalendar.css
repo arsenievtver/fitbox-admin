@@ -1,0 +1,30 @@
+/* Общий класс для инпута даты */
+.date-input {
+    /* Основная стилистика аналогична предыдущему стилю */
+    background-color: transparent;
+    border: 0 solid var(--primary-color);
+    color: var(--primary-color);
+    height: 35px;
+    padding: 0 10px;
+    font-size: 16px;
+    border-radius: 10px;
+    cursor: pointer; /* Изменил на pointer, так как обычно инпуты даты кликабельны */
+    transition: all 0.2s ease-in-out;
+    outline: none;
+    width: max-content; /* Чтобы ширина соответствовала содержимому */
+    box-sizing: border-box;
+}
+
+/* Эффект при фокусировке */
+.date-input:focus {
+    background-color: rgba(255, 255, 255, 0.05);
+    box-shadow: 0 0 3px var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+/* Дополнительные правки для IE/Edge */
+@media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
+    .date-input::-ms-reveal {
+        display: none; /* Удаляет ненужные кнопки */
+    }
+}

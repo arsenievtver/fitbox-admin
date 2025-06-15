@@ -5,3 +5,7 @@ export const JWT_STORAGE_KEY = 'jwt_token';
 export const registerUrl = '/api/v1/auth/register';
 export const logoutUrl = '/api/v1/auth/jwt/logout';
 export const GetallusersUrl = '/api/v1/users/';
+export const GetallslotsUrl = '/api/v1/slots/';
+export const GetoneuserUrl = (id) => `/api/v1/users/${id}`;
+export const PatchoneusersUrl = (id) => `/api/v1/users/${id}`;
+export const postSlotsBulkUrl = `/api/v1/slots/bulk`;

@@ -29,7 +29,9 @@ const Table = ({ columns, data, onRowClick, actions, loading, emptyMessage }) =>
 						className={onRowClick ? 'clickable-row' : ''}
 					>
 						{columns.map(col => (
-							<td key={col.key}>{row[col.key]}</td>
+							<td key={col.key}>
+								{col.renderCell ? col.renderCell(row, index) : row[col.key]}
+							</td>
 						))}
 						{actions && <td className="actions-cell">{actions(row)}</td>}
 					</tr>

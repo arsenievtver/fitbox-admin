@@ -24,8 +24,6 @@ html, body {
     line-height: 1.5;
     background-color: var(--background-color);
     color: var(--text-color);
-    align-items: start;
-    justify-content: space-between;
     height: 100%;
 }
 
@@ -54,8 +52,6 @@ html, body {
     justify-content: flex-start; /* Прижимаем вверх */
     gap: 10px; /* Расстояние между детьми */
 }
-
-
 
 
 @keyframes slide-up {

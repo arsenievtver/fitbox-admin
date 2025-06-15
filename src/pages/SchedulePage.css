@@ -1,0 +1,65 @@
+.schedule-page {
+    display: flex;
+    flex-direction: row;
+    padding: 24px;
+    padding-top: 94px;
+    gap: 32px;
+
+    justify-content: flex-start; /* прилипает к левому краю */
+    align-items: flex-start;
+    flex-wrap: nowrap;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Календарь — фиксированной ширины, не растёт и не сжимается */
+.calendar-section {
+    width: 480px;
+    flex: 0 0 480px; /* ни сжиматься, ни расти */
+}
+
+/* Таблица — занимает всё что осталось, может сжиматься */
+.table-section {
+    flex: 1 1 auto; /* растёт и сжимается */
+    min-width: 300px;
+    background-color: var(--card-background);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.title-table-slots {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 0 20px;
+}
+
+.modal-for-form-slots {
+    display: flex;
+    flex-direction: column;
+}
+
+.full-width-slots-table {
+    width: 100%;
+}
+
+.modal-form-layout {
+    display: flex;
+    flex-direction: column;
+    height: 100%; /* чтобы занять всё доступное место внутри модального окна */
+    width: 100%;
+}
+
+.full-width-slots-table {
+    width: 100%;
+    flex: 1; /* растягивает таблицу на всё оставшееся пространство */
+    overflow-y: auto;
+}
+
+.modal-form-layout button {
+    align-self: flex-end; /* кнопка уходит вправо */
+    margin-top: 1rem;
+}

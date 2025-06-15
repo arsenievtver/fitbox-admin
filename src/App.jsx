@@ -20,6 +20,7 @@ const AppContent = () => {
                 <Route path="/users" element={<UsersPage />} />
                 <Route path="/finance" element={<FinancePage />} />
                 <Route path="/statistics" element={<StatisticsPage />} />
+                <Route path="/user/:id" element={<UserPage />} />
             </Routes>
         </>
     );

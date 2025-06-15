@@ -1,73 +1,18 @@
-.user_data {
-    width: 100%;
-    padding: 16px;
-    max-width: 500px;
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: var(--background-color);
-    border-radius: 12px;
-    padding: 10px 10px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-    transition: background 0.3s ease;
-    margin: 10px 0;
-}
-
-.label {
-    font-weight: 600;
-    color: var(--text-color);
-    font-size: 14px;
-    opacity: 0.6;
-}
-
-.value {
-    text-align: right;
-    color: var(--text-color);
-    font-size: 14px;
-    flex-shrink: 0;
-    max-width: 50%;
-    word-wrap: break-word;
-}
-
-.button_exit {
-    position: fixed;
-    bottom: 60px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 1000;
-    padding: 12px 24px;
-    border-radius: 16px;
-    font-size: 16px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-    border: none;
-    transition: background-color 0.3s ease;
-    margin-bottom: 50px;
-}
-
-.section-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
 .user-avatar-block {
+    width: 100%;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
-    justify-content: center;
-    margin: 24px 0;
+    justify-content: space-between;
+    margin-top: 90px;
+    padding: 0 200px;
+    gap: 10px;
+
 }
 
 .avatar-img {
-    width: 100px;
-    height: 100px;
+    width: 50px;
+    height: 50px;
     border-radius: 50%;
     object-fit: cover;
     border: 1px solid var(--primary-color, #333);
@@ -79,4 +24,133 @@
     font-size: 18px;
     font-weight: 600;
     color: var(--text-color, #222);
+}
+
+
+/* Обёртка — вся карточка пользователя */
+.user_data_card {
+    width: 100%;
+    max-width: 1200px;
+    margin: 10px;
+    padding: 24px;
+    background-color: white;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+/* Внутри — сетка из 3 колонок */
+.user_data {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+}
+
+/* Каждая секция в карточке */
+.section {
+    background-color: var(--background-color);
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: 0 2px 6px var(--border-color);
+    min-height: 100%;
+}
+
+/* Заголовок секции */
+.section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    cursor: pointer;
+}
+
+/* Каждая строка в секции */
+.row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #eee;
+}
+
+/* Последняя строка — без нижней границы */
+.row:last-child {
+    border-bottom: none;
+}
+
+/* Подпись */
+.label {
+    font-weight: 600;
+    color: var(--text-color, #444);
+    font-size: 14px;
+    opacity: 0.7;
+}
+
+/* Значение */
+.value {
+    text-align: right;
+    color: var(--text-color, #111);
+    font-size: 14px;
+    max-width: 50%;
+    min-width: 200px;
+    word-wrap: break-word;
+}
+
+/* Остальной CSS (avatar, кнопка, и т.д.) можно оставить без изменений */
+
+
+@media (max-width: 900px) {
+    .user_data {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+    .user_data {
+        grid-template-columns: 1fr;
+    }
+}
+
+.input {
+    padding: 4px 8px;
+    font-size: 1rem;
+    width: 100%;
+}
+
+.input.disabled {
+    background-color: var(--background-color);
+    border: none;
+    color: var(--text-color, #444);
+}
+
+.button-edit-group {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.success-toast {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: #4caf50;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    font-size: 14px;
+    z-index: 1000;
+    animation: fadeInOut 2s ease-in-out;
+}
+
+@keyframes fadeInOut {
+    0% { opacity: 0; transform: translateY(-10px); }
+    10% { opacity: 1; transform: translateY(0); }
+    90% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; transform: translateY(-10px); }
 }
