@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import MainLayout from "../components/layouts/MainLayout";
 import Table from "../components/Table/Table";
 import MonthCalendar from "../components/Calendar/MonthCalendar";
-import { GetallslotsUrl, postSlotsBulkUrl } from "../helpers/constants";
+import { GetallslotsUrl, postSlotsBulkUrl, GetallusersUrl} from "../helpers/constants";
 import useApi from "../hooks/useApi.hook";
 import { format, parseISO, isSameDay } from "date-fns";
 import { ru } from "date-fns/locale";
@@ -17,6 +17,8 @@ const SchedulePage = () => {
 	const [selectedDate, setSelectedDate] = useState(new Date());
 	const [currentMonth, setCurrentMonth] = useState(new Date());
 	const [modalOpen, setModalOpen] = useState(false);
+	const [selectedSlot, setSelectedSlot] = useState(null);
+	const [bookedUsers, setBookedUsers] = useState([]);
 	const slotsFormRef = useRef();
 
 	// Функция загрузки слотов — вызовем и при монтировании, и после записи новых слотов
@@ -32,6 +34,11 @@ const SchedulePage = () => {
 	useEffect(() => {
 		fetchSlots();
 	}, [api]);
+
+	useEffect(() => {
+		setSelectedSlot(null);
+		setBookedUsers([]);
+	}, [selectedDate]);
 
 	const selectedDaySlots = slots.filter(slot =>
 		isSameDay(parseISO(slot.time), selectedDate)
@@ -78,6 +85,39 @@ const SchedulePage = () => {
 		{ key: 'free_places', label: 'Свободных мест' },
 	];
 
+	const handleRowClick = async (row) => {
+		const slot = selectedDaySlots.find(s =>
+			format(parseISO(s.time), "HH:00") === row.time
+		);
+
+		if (!slot || !slot.bookings?.length) {
+			setBookedUsers([]);
+			setSelectedSlot(null);
+			return;
+		}
+
+		setSelectedSlot(slot); // сохраняем выбранный слот
+
+		const userIds = slot.bookings.map(b => b.user_id);
+		const query = userIds.map(id => `id__in=${id}`).join('&');
+		try {
+			const { data: users } = await api.get(`${GetallusersUrl}?${query}`);
+			// Добавим created_at и source_record из booking
+			const usersWithBookingInfo = users.map(user => {
+				const booking = slot.bookings.find(b => b.user_id === user.id);
+				return {
+					...user,
+					created_at: booking.created_at,
+					source_record: booking.source_record
+				};
+			});
+			setBookedUsers(usersWithBookingInfo);
+		} catch (e) {
+			console.error("Ошибка при загрузке пользователей", e);
+		}
+	};
+
+
 	return (
 		<MainLayout>
 			<div className="schedule-page">
@@ -114,7 +154,27 @@ const SchedulePage = () => {
 						columns={columns}
 						data={tableData}
 						emptyMessage="Нет занятий на этот день"
+						onRowClick={handleRowClick}
 					/>
+					{selectedSlot && bookedUsers.length > 0 && (
+						<>
+							<h3>Записавшиеся на слот {format(parseISO(selectedSlot.time), "HH:00")}</h3>
+							<Table
+								columns={[
+									{ key: 'full_name', label: 'ФИО' },
+									{ key: 'created_at', label: 'Дата записи' },
+									{ key: 'source_record', label: 'Источник' }
+								]}
+								data={bookedUsers.map(user => ({
+									full_name: `${user.last_name || ''} ${user.name || ''}`.trim(),
+									created_at: format(parseISO(user.created_at), "dd.MM.yyyy HH:mm"),
+									source_record: user.source_record
+								}))}
+								emptyMessage="Нет пользователей"
+							/>
+						</>
+					)}
+
 				</div>
 			</div>
 		</MainLayout>
