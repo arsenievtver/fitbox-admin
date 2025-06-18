@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import MainLayout from "../components/layouts/MainLayout";
 import Table from "../components/Table/Table";
 import MonthCalendar from "../components/Calendar/MonthCalendar";
-import { GetallslotsUrl, postSlotsBulkUrl, GetallusersUrl} from "../helpers/constants";
+import { GetallslotsUrl, postSlotsBulkUrl, GetallusersUrl, deleteSlotUrl, deleteBookingUrl} from "../helpers/constants";
 import useApi from "../hooks/useApi.hook";
 import { format, parseISO, isSameDay } from "date-fns";
 import { ru } from "date-fns/locale";
@@ -12,6 +12,7 @@ import Modal from '../components/Modals/ModalBase';
 import SlotsTableForm from '../components/Forms/SlotsTableForm';
 import { UserPlus } from 'lucide-react';
 import BookingModal from '../components/Modals/BookingModal';
+import { Trash } from 'lucide-react';
 
 
 const SchedulePage = () => {
@@ -24,6 +25,27 @@ const SchedulePage = () => {
 	const [bookedUsers, setBookedUsers] = useState([]);
 	const slotsFormRef = useRef();
 	const [modalTime, setModalTime] = useState(null);
+
+
+	const handleDeleteBooking = async (bookingId) => {
+		if (!window.confirm("Удалить эту запись?")) return;
+
+		try {
+			await api.delete(deleteBookingUrl(bookingId));
+			alert("Запись удалена");
+			// Просто закрываем таблицу с записавшимися
+			setSelectedSlot(null);
+			setBookedUsers([]);
+			// Обновляем слоты, чтобы актуализировать данные по свободным местам
+			await fetchSlots();
+		} catch (error) {
+			console.error("Ошибка при удалении записи", error);
+			alert("Ошибка при удалении записи");
+		}
+	};
+
+
+
 
 
 	// Функция загрузки слотов — вызовем и при монтировании, и после записи новых слотов
@@ -103,11 +125,25 @@ const SchedulePage = () => {
 		}
 	};
 
+	const handleDeleteSlot = async (id) => {
+		if (!window.confirm("Удалить этот слот?")) return;
+
+		try {
+			await api.delete(deleteSlotUrl(id));
+			alert("Слот удалён");
+			await fetchSlots();
+		} catch (error) {
+			console.error("Ошибка при удалении слота", error);
+			alert("Ошибка при удалении слота");
+		}
+	};
+
+
 	const columns = [
 		{ key: 'time', label: 'Время' },
 		{ key: 'type', label: 'Тип' },
-		{ key: 'number_of_places', label: 'Кол-во мест' },
-		{ key: 'free_places', label: 'Свободных мест' },
+		{ key: 'number_of_places', label: 'Кол-во' },
+		{ key: 'free_places', label: 'Свободных' },
 		{
 			key: 'action',
 			label: 'Записать',
@@ -130,7 +166,37 @@ const SchedulePage = () => {
 					<UserPlus size={18} color="#4caf50" />
 				</button>
 			)
+		},
+		{
+			key: 'delete',
+			label: 'Удалить',
+			renderCell: (row) => {
+				// находим ID слота по времени
+				const slot = selectedDaySlots.find(s => format(parseISO(s.time), "HH:00") === row.time);
+				if (!slot) return null;
+
+				return (
+					<button
+						onClick={(e) => {
+							e.stopPropagation();
+							handleDeleteSlot(slot.id);
+						}}
+						style={{
+							background: 'none',
+							border: 'none',
+							cursor: 'pointer',
+							display: 'flex',
+							alignItems: 'center',
+							justifyContent: 'center'
+						}}
+						title="Удалить слот"
+					>
+						<Trash size={18} color="#e53935" />
+					</button>
+				);
+			}
 		}
+
 	];
 
 	const handleRowClick = async (row) => {
@@ -156,7 +222,8 @@ const SchedulePage = () => {
 				return {
 					...user,
 					created_at: booking.created_at,
-					source_record: booking.source_record
+					source_record: booking.source_record,
+					booking_id: booking.id  // <-- добавляем ID бронирования
 				};
 			});
 			setBookedUsers(usersWithBookingInfo);
@@ -252,12 +319,36 @@ const SchedulePage = () => {
 								columns={[
 									{ key: 'full_name', label: 'ФИО' },
 									{ key: 'created_at', label: 'Дата записи' },
-									{ key: 'source_record', label: 'Источник' }
+									{ key: 'source_record', label: 'Источник' },
+									{
+										key: 'delete',
+										label: 'Удалить',
+										renderCell: (row) => (
+											<button
+												onClick={(e) => {
+													e.stopPropagation();
+													handleDeleteBooking(row.booking_id);
+												}}
+												style={{
+													background: 'none',
+													border: 'none',
+													cursor: 'pointer',
+													display: 'flex',
+													alignItems: 'center',
+													justifyContent: 'center'
+												}}
+												title="Удалить запись"
+											>
+												<Trash size={18} color="#e53935" />
+											</button>
+										)
+									}
 								]}
 								data={bookedUsers.map(user => ({
 									full_name: `${user.last_name || ''} ${user.name || ''}`.trim(),
 									created_at: format(parseISO(user.created_at), "dd.MM.yyyy HH:mm"),
-									source_record: user.source_record
+									source_record: user.source_record,
+									booking_id: user.booking_id  // обязательно добавь!
 								}))}
 								emptyMessage="Нет пользователей"
 							/>

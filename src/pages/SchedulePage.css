@@ -63,3 +63,11 @@
     align-self: flex-end; /* кнопка уходит вправо */
     margin-top: 1rem;
 }
+
+.table-section table th,
+.table-section table td {
+    text-align: center;
+    vertical-align: middle;
+
+
+}

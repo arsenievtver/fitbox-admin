@@ -10,3 +10,5 @@ export const GetoneuserUrl = (id) => `/api/v1/users/${id}`;
 export const PatchoneusersUrl = (id) => `/api/v1/users/${id}`;
 export const postSlotsBulkUrl = `/api/v1/slots/bulk`;
 export const postBookingAdminsUrl = '/api/v1/bookings/by-admin';
+export const deleteSlotUrl = (id) => `/api/v1/slots/${id}`;
+export const deleteBookingUrl = (id) => `/api/v1/bookings/${id}`;

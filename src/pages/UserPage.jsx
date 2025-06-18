@@ -62,12 +62,21 @@ const UserPage = () => {
     const [formData, setFormData] = useState({});
     const [showSuccessMessage, setShowSuccessMessage] = useState(false);
 
+    const genderOptions = [
+        { label: 'Муж', value: 'муж' },
+        { label: 'Жен', value: 'жен' },
+    ];
+
+
     useEffect(() => {
         const fetchUser = async () => {
             try {
                 const { data } = await api.get(GetoneuserUrl(id));
                 setUser(data);
-                setFormData(data);
+                setFormData({
+                    ...data,
+                    gender: genderOptions.find(opt => opt.value === data.gender) || null,
+                });
             } catch (e) {
                 console.error('Ошибка при получении пользователя:', e);
             } finally {
@@ -84,9 +93,20 @@ const UserPage = () => {
 
     const handleSave = async () => {
         try {
-            const { data } = await api.patch(PatchoneusersUrl(id), formData);
+            const payload = {
+                ...formData,
+                gender: formData.gender?.value || null,
+            };
+
+            const { data } = await api.patch(PatchoneusersUrl(id), payload);
             setUser(data);
-            setFormData(data);
+
+            // после сохранения снова оборачиваем gender
+            setFormData({
+                ...data,
+                gender: genderOptions.find(opt => opt.value === data.gender) || null,
+            });
+
             setIsEditing(false);
             setShowSuccessMessage(true);
             setTimeout(() => setShowSuccessMessage(false), 2000);
@@ -94,6 +114,7 @@ const UserPage = () => {
             console.error('Ошибка при сохранении пользователя:', error);
         }
     };
+
 
 
 
@@ -155,12 +176,14 @@ const UserPage = () => {
                                 value={
                                     <DropdownInput
                                         value={formData.gender}
-                                        onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
-                                        options={['муж', 'жен']}
+                                        onChange={(selected) => setFormData((prev) => ({ ...prev, gender: selected }))}
+                                        options={genderOptions}
                                         placeholder="Выберите пол"
+                                        isClearable={true}
                                     />
                                 }
                             />
+
                         ) : (
                             <UserRow label="Пол:" value={user.gender || '-'} />
                         )}
