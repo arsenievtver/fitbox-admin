@@ -2,18 +2,16 @@ import React, { useEffect, useRef, useState } from "react";
 import MainLayout from "../components/layouts/MainLayout";
 import Table from "../components/Table/Table";
 import MonthCalendar from "../components/Calendar/MonthCalendar";
-import { GetallslotsUrl, postSlotsBulkUrl, GetallusersUrl, deleteSlotUrl, deleteBookingUrl} from "../helpers/constants";
+import { GetallslotsUrl, postSlotsBulkUrl, GetallusersUrl, deleteSlotUrl, deleteBookingUrl, getSlotsFilterUrl } from "../helpers/constants";
 import useApi from "../hooks/useApi.hook";
-import { format, parseISO, isSameDay } from "date-fns";
+import { format, parseISO } from "date-fns";
 import { ru } from "date-fns/locale";
 import "./SchedulePage.css";
 import ButtonMy from "../components/Buttons/ButtonMy.jsx";
 import Modal from '../components/Modals/ModalBase';
 import SlotsTableForm from '../components/Forms/SlotsTableForm';
-import { UserPlus } from 'lucide-react';
+import { UserPlus, Trash } from 'lucide-react';
 import BookingModal from '../components/Modals/BookingModal';
-import { Trash } from 'lucide-react';
-
 
 const SchedulePage = () => {
 	const api = useApi();
@@ -25,6 +23,14 @@ const SchedulePage = () => {
 	const [bookedUsers, setBookedUsers] = useState([]);
 	const slotsFormRef = useRef();
 	const [modalTime, setModalTime] = useState(null);
+	const [daySlots, setDaySlots] = useState([]);
+
+	const datesWithSlots = React.useMemo(() => {
+		return [...new Set(
+			slots.map(slot => format(parseISO(slot.time), 'yyyy-MM-dd'))
+		)];
+	}, [slots]);
+
 
 
 	const handleDeleteBooking = async (bookingId) => {
@@ -33,10 +39,8 @@ const SchedulePage = () => {
 		try {
 			await api.delete(deleteBookingUrl(bookingId));
 			alert("Запись удалена");
-			// Просто закрываем таблицу с записавшимися
 			setSelectedSlot(null);
 			setBookedUsers([]);
-			// Обновляем слоты, чтобы актуализировать данные по свободным местам
 			await fetchSlots();
 		} catch (error) {
 			console.error("Ошибка при удалении записи", error);
@@ -44,46 +48,64 @@ const SchedulePage = () => {
 		}
 	};
 
-
-
-
-
-	// Функция загрузки слотов — вызовем и при монтировании, и после записи новых слотов
 	const fetchSlots = async () => {
 		try {
 			const { data } = await api.get(GetallslotsUrl);
 			setSlots(data);
-			return data; // 👈 возвращаем массив
-		} catch (e) {
-			console.error("Ошибка при загрузке слотов", e);
+			return data;
+		} catch (error) {
+			console.error("Ошибка при загрузке слотов", error);
+			setSlots([]);
 			return [];
 		}
 	};
 
-
 	useEffect(() => {
-		fetchSlots();
-	}, [api]);
+		const fetchDaySlots = async () => {
+			if (!selectedDate) return;
+
+			const start = new Date(selectedDate);
+			start.setHours(0, 0, 0, 0);
+			const end = new Date(selectedDate);
+			end.setHours(23, 59, 59, 999);
+
+			const startISO = start.toISOString();
+			const endISO = end.toISOString();
+
+			try {
+				const { data } = await api.get(getSlotsFilterUrl(startISO, endISO));
+				setDaySlots(data);
+				setSelectedSlot(null);
+				setBookedUsers([]);
+			} catch (e) {
+				console.error("Ошибка при загрузке слотов на выбранный день", e);
+				setDaySlots([]);
+			}
+		};
+
+		fetchDaySlots();
+	}, [selectedDate]);
 
 	useEffect(() => {
 		setSelectedSlot(null);
 		setBookedUsers([]);
 	}, [selectedDate]);
 
-	const selectedDaySlots = slots.filter(slot =>
-		isSameDay(parseISO(slot.time), selectedDate)
-	);
+	useEffect(() => {
+		fetchSlots();
+	}, []);
+
+	const selectedDaySlots = daySlots;
 
 	const openBookingModal = (slotTime) => {
 		const slot = selectedDaySlots.find(s =>
 			format(parseISO(s.time), "HH:00") === slotTime
 		);
 		if (slot) {
-			setSelectedSlot(slot); // сохраняем сам слот
-			setModalTime(slotTime); // время остаётся на всякий случай
+			setSelectedSlot(slot);
+			setModalTime(slotTime);
 		}
 	};
-
 
 	const closeBookingModal = () => {
 		setModalTime(null);
@@ -94,14 +116,12 @@ const SchedulePage = () => {
 		time: format(parseISO(slot.time), "HH:00"),
 		number_of_places: slot.number_of_places,
 		free_places: slot.free_places,
-		action: '' // нужно, чтобы .map не упал
+		action: ''
 	})).sort((a, b) => {
 		const timeA = parseInt(a.time.split(':')[0], 10);
 		const timeB = parseInt(b.time.split(':')[0], 10);
 		return timeA - timeB;
 	});
-
-
 
 	const handleSubmitSlots = async () => {
 		if (!slotsFormRef.current) return;
@@ -113,12 +133,10 @@ const SchedulePage = () => {
 		}
 
 		try {
-			await api.post(postSlotsBulkUrl, {
-				slots: selectedSlots
-			});
+			await api.post(postSlotsBulkUrl, { slots: selectedSlots });
 			alert('Слоты успешно добавлены!');
 			setModalOpen(false);
-			await fetchSlots(); // Обновляем данные после добавления
+			await fetchSlots();
 		} catch (error) {
 			console.error('Ошибка при добавлении слотов', error);
 			alert('Ошибка при добавлении слотов');
@@ -138,7 +156,6 @@ const SchedulePage = () => {
 		}
 	};
 
-
 	const columns = [
 		{ key: 'time', label: 'Время' },
 		{ key: 'type', label: 'Тип' },
@@ -150,8 +167,8 @@ const SchedulePage = () => {
 			renderCell: (row) => (
 				<button
 					onClick={(e) => {
-						e.stopPropagation(); // <<< предотвращаем срабатывание onRowClick
-						openBookingModal(row.time); // <<< здесь открываем модалку записи
+						e.stopPropagation();
+						openBookingModal(row.time);
 					}}
 					style={{
 						background: 'none',
@@ -171,7 +188,6 @@ const SchedulePage = () => {
 			key: 'delete',
 			label: 'Удалить',
 			renderCell: (row) => {
-				// находим ID слота по времени
 				const slot = selectedDaySlots.find(s => format(parseISO(s.time), "HH:00") === row.time);
 				if (!slot) return null;
 
@@ -196,7 +212,6 @@ const SchedulePage = () => {
 				);
 			}
 		}
-
 	];
 
 	const handleRowClick = async (row) => {
@@ -210,20 +225,19 @@ const SchedulePage = () => {
 			return;
 		}
 
-		setSelectedSlot(slot); // сохраняем выбранный слот
+		setSelectedSlot(slot);
 
 		const userIds = slot.bookings.map(b => b.user_id);
 		const query = `id__in=${userIds.join(',')}`;
 		try {
 			const { data: users } = await api.get(`${GetallusersUrl}?${query}`);
-			// Добавим created_at и source_record из booking
 			const usersWithBookingInfo = users.map(user => {
 				const booking = slot.bookings.find(b => b.user_id === user.id);
 				return {
 					...user,
 					created_at: booking.created_at,
 					source_record: booking.source_record,
-					booking_id: booking.id  // <-- добавляем ID бронирования
+					booking_id: booking.id
 				};
 			});
 			setBookedUsers(usersWithBookingInfo);
@@ -254,13 +268,12 @@ const SchedulePage = () => {
 		}
 	};
 
-
 	return (
 		<MainLayout>
 			<div className="schedule-page">
 				<div className="calendar-section">
 					<MonthCalendar
-						slots={slots}
+						hasSlots={datesWithSlots}
 						selectedDate={selectedDate}
 						setSelectedDate={setSelectedDate}
 						currentMonth={currentMonth}
@@ -272,7 +285,6 @@ const SchedulePage = () => {
 						<h2>Слоты на {format(selectedDate, "d MMMM yyyy", { locale: ru })}</h2>
 						<div>
 							<ButtonMy onClick={() => setModalOpen(true)}>Добавить слоты</ButtonMy>
-
 							{modalOpen && (
 								<Modal className="modal-for-form-slots" onClose={() => setModalOpen(false)}>
 									<div className="modal-form-layout">
@@ -293,7 +305,6 @@ const SchedulePage = () => {
 						emptyMessage="Нет занятий на этот день"
 						onRowClick={handleRowClick}
 					/>
-
 					{modalTime && selectedSlot && (
 						<BookingModal
 							time={modalTime}
@@ -301,9 +312,8 @@ const SchedulePage = () => {
 							onClose={closeBookingModal}
 							slotId={selectedSlot.id}
 							onSubmit={async () => {
-								const freshSlots = await fetchSlots(); // теперь у нас обновлённые слоты
-
-								const updatedSlot = freshSlots.find(s => s.id === selectedSlot.id); // ищем по ним
+								const freshSlots = await fetchSlots();
+								const updatedSlot = freshSlots.find(s => s.id === selectedSlot.id);
 								if (updatedSlot) {
 									setSelectedSlot(updatedSlot);
 									await refreshBookedUsers(updatedSlot);
@@ -311,7 +321,6 @@ const SchedulePage = () => {
 							}}
 						/>
 					)}
-
 					{selectedSlot && bookedUsers.length > 0 && (
 						<>
 							<h3>Записавшиеся на слот {format(parseISO(selectedSlot.time), "HH:00")}</h3>
@@ -348,13 +357,12 @@ const SchedulePage = () => {
 									full_name: `${user.last_name || ''} ${user.name || ''}`.trim(),
 									created_at: format(parseISO(user.created_at), "dd.MM.yyyy HH:mm"),
 									source_record: user.source_record,
-									booking_id: user.booking_id  // обязательно добавь!
+									booking_id: user.booking_id
 								}))}
 								emptyMessage="Нет пользователей"
 							/>
 						</>
 					)}
-
 				</div>
 			</div>
 		</MainLayout>
@@ -362,3 +370,4 @@ const SchedulePage = () => {
 };
 
 export default SchedulePage;
+

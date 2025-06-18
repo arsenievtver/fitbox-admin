@@ -116,8 +116,13 @@
     color: white;
 }
 
-.has-slots::after {
-    content: '';
+
+
+.day-number {
+    text-align: center;
+}
+
+.dot-green {
     position: absolute;
     bottom: 4px;
     left: 50%;
@@ -125,5 +130,6 @@
     width: 6px;
     height: 6px;
     border-radius: 50%;
-    background-color: var(--primary-color-2, #FF075A);
+    background-color: #4caf50;
+    margin: 2px auto 0;
 }

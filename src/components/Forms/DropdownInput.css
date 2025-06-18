@@ -20,7 +20,7 @@
 }
 
 .dropdown-list li {
-    padding: 8px 12px;
+    padding: 0 12px;
     cursor: pointer;
     transition: background 0.2s;
     color: var(--primary-color);

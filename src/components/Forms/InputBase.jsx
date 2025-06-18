@@ -1,12 +1,12 @@
 import React from 'react';
 import './InputBase.css';
 
-const InputBase = ({ name, value, onChange, placeholder }) => {
+const InputBase = ({ name, value, onChange, placeholder, className = '' }) => {
     return (
         <input
-            className="custom-input"
+            className={`custom-input ${className}`}
             type="text"
-            name={name} // ← вот это важно
+            name={name}
             value={value}
             onChange={onChange}
             placeholder={placeholder}
@@ -15,5 +15,6 @@ const InputBase = ({ name, value, onChange, placeholder }) => {
 };
 
 export default InputBase;
+
 
 

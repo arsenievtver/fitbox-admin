@@ -12,3 +12,6 @@ export const postSlotsBulkUrl = `/api/v1/slots/bulk`;
 export const postBookingAdminsUrl = '/api/v1/bookings/by-admin';
 export const deleteSlotUrl = (id) => `/api/v1/slots/${id}`;
 export const deleteBookingUrl = (id) => `/api/v1/bookings/${id}`;
+
+export const getSlotsFilterUrl = (start_time, stop_time) =>
+	`/api/v1/slots/?time__gt=${encodeURIComponent(start_time)}&time__lt=${encodeURIComponent(stop_time)}`;

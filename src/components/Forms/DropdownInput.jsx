@@ -15,7 +15,6 @@ const DropdownInput = ({
 	const customStyles = {
 		control: (base) => ({
 			...base,
-			minWidth: 250,
 			borderRadius: 10,
 			border: isValid ? '1px solid var(--primary-color)' : '1px solid red',
 			boxShadow: 'none',

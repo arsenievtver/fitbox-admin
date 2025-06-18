@@ -1,8 +1,7 @@
 .schedule-page {
     display: flex;
     flex-direction: row;
-    padding: 24px;
-    padding-top: 94px;
+    margin-top: 70px;
     gap: 32px;
 
     justify-content: flex-start; /* прилипает к левому краю */

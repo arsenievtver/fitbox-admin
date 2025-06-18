@@ -2,6 +2,7 @@ import React, { useState, forwardRef, useImperativeHandle } from 'react';
 import Table from '../Table/Table';
 import InputBase from '../Forms/InputBase';
 import DropdownInput from '../Forms/DropdownInput';
+import './SlotsTableForm.css'
 
 const HOURS = Array.from({ length: 12 }, (_, i) => {
 	const hour = (9 + i) % 24;
@@ -99,6 +100,7 @@ const SlotsTableForm = forwardRef(({ selectedDate }, ref) => {
 			label: 'Кол-во мест',
 			renderCell: (_, i) => (
 				<InputBase
+					className='input-base-num'
 					type="number"
 					value={rows[i].places}
 					onChange={(e) => handlePlacesChange(i, Number(e.target.value))}

@@ -15,12 +15,12 @@ import './MonthCalendar.css';
 
 const daysOfWeek = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
 
-const MonthCalendar = ({ currentMonth, setCurrentMonth, selectedDate, setSelectedDate, slots = [] }) => {
+const MonthCalendar = ({ currentMonth, setCurrentMonth, selectedDate, setSelectedDate, hasSlots = [] }) => {
 	const monthStart = startOfMonth(currentMonth);
 	const monthEnd = endOfMonth(currentMonth);
 	const startDate = startOfWeek(monthStart, { weekStartsOn: 1 });
 
-	const slotDates = useMemo(() => slots.map(slot => new Date(slot.time)), [slots]);
+	const slotDateStrings = useMemo(() => hasSlots, [hasSlots]);
 
 	const calendar = useMemo(() => {
 		const rows = [];
@@ -36,7 +36,12 @@ const MonthCalendar = ({ currentMonth, setCurrentMonth, selectedDate, setSelecte
 		return rows;
 	}, [startDate, monthEnd]);
 
-	const isSlotDay = (date) => slotDates.some(slotDate => isSameDay(slotDate, date));
+	const isSlotDay = (date) => {
+		const dateStr = format(date, 'yyyy-MM-dd');
+		return slotDateStrings.includes(dateStr);
+	};
+
+
 
 	const handlePrevMonth = () => setCurrentMonth(prev => subMonths(prev, 1));
 	const handleNextMonth = () => setCurrentMonth(prev => addDays(prev, 30));
@@ -73,7 +78,8 @@ const MonthCalendar = ({ currentMonth, setCurrentMonth, selectedDate, setSelecte
 										${isSelected ? 'selected' : ''}`
 									}
 								>
-									{format(date, 'd')}
+									<div className="day-number">{format(date, 'd')}</div>
+									{hasSlots && <div className="dot-green" />}
 								</div>
 							);
 						})}
