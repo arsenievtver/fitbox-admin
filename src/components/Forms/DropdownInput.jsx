@@ -1,66 +1,40 @@
-// src/components/Forms/DropdownInput.jsx
-import React, { useState, useRef, useEffect } from 'react';
-import './DropdownInput.css';
+import React from 'react';
+import Select from 'react-select';
 
-const DropdownInput = ({ options = [], value, onChange, placeholder = 'Выберите значение' }) => {
-	const [inputValue, setInputValue] = useState('');
-	const [isOpen, setIsOpen] = useState(false);
-	const [filteredOptions, setFilteredOptions] = useState(options);
-	const wrapperRef = useRef(null);
+const DropdownInput = ({
+						   options = [],
+						   value = null,
+						   onChange,
+						   placeholder = 'Выберите значение',
+						   isClearable = false,
+						   getOptionLabel = option => option?.label || option?.toString() || '',
+						   getOptionValue = option => option?.value || option?.toString(),
+						   isValid = true,
+					   }) => {
 
-	useEffect(() => {
-		setInputValue(value || '');
-	}, [value]);
-
-	useEffect(() => {
-		const handleClickOutside = (event) => {
-			if (wrapperRef.current && !wrapperRef.current.contains(event.target)) {
-				setIsOpen(false);
-			}
-		};
-		document.addEventListener('mousedown', handleClickOutside);
-		return () => {
-			document.removeEventListener('mousedown', handleClickOutside);
-		};
-	}, []);
-
-	const handleInputChange = (e) => {
-		const input = e.target.value;
-		setInputValue(input);
-		setFilteredOptions(
-			options.filter((option) =>
-				option.toLowerCase().includes(input.toLowerCase())
-			)
-		);
-		setIsOpen(true);
-	};
-
-	const handleOptionClick = (option) => {
-		setInputValue(option);
-		onChange({ target: { value: option } });
-		setIsOpen(false);
+	const customStyles = {
+		control: (base) => ({
+			...base,
+			minWidth: 250,
+			borderRadius: 10,
+			border: isValid ? '1px solid var(--primary-color)' : '1px solid red',
+			boxShadow: 'none',
+			'&:hover': { borderColor: isValid ? 'var(--primary-color)' : 'red' },
+		}),
+		menu: (base) => ({ ...base, zIndex: 9999 }),
 	};
 
 	return (
-		<div className="dropdown-wrapper" ref={wrapperRef}>
-			<input
-				type="text"
-				className="custom-input"
-				value={inputValue}
-				onChange={handleInputChange}
-				onFocus={() => setIsOpen(true)}
-				placeholder={placeholder}
-			/>
-			{isOpen && filteredOptions.length > 0 && (
-				<ul className="dropdown-list">
-					{filteredOptions.map((option) => (
-						<li key={option} onClick={() => handleOptionClick(option)}>
-							{option}
-						</li>
-					))}
-				</ul>
-			)}
-		</div>
+		<Select
+			options={options}
+			value={value}
+			onChange={onChange}
+			placeholder={placeholder}
+			isClearable={isClearable}
+			getOptionLabel={getOptionLabel}
+			getOptionValue={getOptionValue}
+			styles={customStyles}
+		/>
 	);
 };
 

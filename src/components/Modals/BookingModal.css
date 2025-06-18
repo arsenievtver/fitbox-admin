@@ -1,0 +1,27 @@
+.modal-new-booking {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    height: 100%;
+}
+
+.modal-new {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-new-booking h3 {
+    margin-bottom: 10px;
+    color: var(--text-color);
+    font-weight: 600;
+}
+
+.modal-new-booking .button-new-booking {
+    align-self: flex-end;
+}
+
+.modal-new-booking .button-new-booking:hover {
+    background-color: var(--primary-color);
+
+}

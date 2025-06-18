@@ -9,3 +9,4 @@ export const GetallslotsUrl = '/api/v1/slots/';
 export const GetoneuserUrl = (id) => `/api/v1/users/${id}`;
 export const PatchoneusersUrl = (id) => `/api/v1/users/${id}`;
 export const postSlotsBulkUrl = `/api/v1/slots/bulk`;
+export const postBookingAdminsUrl = '/api/v1/bookings/by-admin';

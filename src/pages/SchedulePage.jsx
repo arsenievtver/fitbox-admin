@@ -10,6 +10,9 @@ import "./SchedulePage.css";
 import ButtonMy from "../components/Buttons/ButtonMy.jsx";
 import Modal from '../components/Modals/ModalBase';
 import SlotsTableForm from '../components/Forms/SlotsTableForm';
+import { UserPlus } from 'lucide-react';
+import BookingModal from '../components/Modals/BookingModal';
+
 
 const SchedulePage = () => {
 	const api = useApi();
@@ -20,16 +23,21 @@ const SchedulePage = () => {
 	const [selectedSlot, setSelectedSlot] = useState(null);
 	const [bookedUsers, setBookedUsers] = useState([]);
 	const slotsFormRef = useRef();
+	const [modalTime, setModalTime] = useState(null);
+
 
 	// Функция загрузки слотов — вызовем и при монтировании, и после записи новых слотов
 	const fetchSlots = async () => {
 		try {
 			const { data } = await api.get(GetallslotsUrl);
 			setSlots(data);
+			return data; // 👈 возвращаем массив
 		} catch (e) {
 			console.error("Ошибка при загрузке слотов", e);
+			return [];
 		}
 	};
+
 
 	useEffect(() => {
 		fetchSlots();
@@ -44,17 +52,34 @@ const SchedulePage = () => {
 		isSameDay(parseISO(slot.time), selectedDate)
 	);
 
+	const openBookingModal = (slotTime) => {
+		const slot = selectedDaySlots.find(s =>
+			format(parseISO(s.time), "HH:00") === slotTime
+		);
+		if (slot) {
+			setSelectedSlot(slot); // сохраняем сам слот
+			setModalTime(slotTime); // время остаётся на всякий случай
+		}
+	};
+
+
+	const closeBookingModal = () => {
+		setModalTime(null);
+	};
+
 	const tableData = selectedDaySlots.map(slot => ({
 		type: slot.type,
 		time: format(parseISO(slot.time), "HH:00"),
 		number_of_places: slot.number_of_places,
-		free_places: slot.free_places
-	}))
-		.sort((a, b) => {
-			const timeA = parseInt(a.time.split(':')[0], 10);
-			const timeB = parseInt(b.time.split(':')[0], 10);
-			return timeA - timeB;
-		});
+		free_places: slot.free_places,
+		action: '' // нужно, чтобы .map не упал
+	})).sort((a, b) => {
+		const timeA = parseInt(a.time.split(':')[0], 10);
+		const timeB = parseInt(b.time.split(':')[0], 10);
+		return timeA - timeB;
+	});
+
+
 
 	const handleSubmitSlots = async () => {
 		if (!slotsFormRef.current) return;
@@ -83,6 +108,29 @@ const SchedulePage = () => {
 		{ key: 'type', label: 'Тип' },
 		{ key: 'number_of_places', label: 'Кол-во мест' },
 		{ key: 'free_places', label: 'Свободных мест' },
+		{
+			key: 'action',
+			label: 'Записать',
+			renderCell: (row) => (
+				<button
+					onClick={(e) => {
+						e.stopPropagation(); // <<< предотвращаем срабатывание onRowClick
+						openBookingModal(row.time); // <<< здесь открываем модалку записи
+					}}
+					style={{
+						background: 'none',
+						border: 'none',
+						cursor: 'pointer',
+						display: 'flex',
+						alignItems: 'center',
+						justifyContent: 'center'
+					}}
+					title="Записать клиента"
+				>
+					<UserPlus size={18} color="#4caf50" />
+				</button>
+			)
+		}
 	];
 
 	const handleRowClick = async (row) => {
@@ -99,7 +147,7 @@ const SchedulePage = () => {
 		setSelectedSlot(slot); // сохраняем выбранный слот
 
 		const userIds = slot.bookings.map(b => b.user_id);
-		const query = userIds.map(id => `id__in=${id}`).join('&');
+		const query = `id__in=${userIds.join(',')}`;
 		try {
 			const { data: users } = await api.get(`${GetallusersUrl}?${query}`);
 			// Добавим created_at и source_record из booking
@@ -114,6 +162,28 @@ const SchedulePage = () => {
 			setBookedUsers(usersWithBookingInfo);
 		} catch (e) {
 			console.error("Ошибка при загрузке пользователей", e);
+		}
+	};
+
+	const refreshBookedUsers = async (slotToUse = selectedSlot) => {
+		if (!slotToUse || !slotToUse.bookings?.length) return;
+
+		const userIds = slotToUse.bookings.map(b => b.user_id);
+		const query = `id__in=${userIds.join(',')}`;
+
+		try {
+			const { data: users } = await api.get(`${GetallusersUrl}?${query}`);
+			const usersWithBookingInfo = users.map(user => {
+				const booking = slotToUse.bookings.find(b => b.user_id === user.id);
+				return {
+					...user,
+					created_at: booking.created_at,
+					source_record: booking.source_record
+				};
+			});
+			setBookedUsers(usersWithBookingInfo);
+		} catch (e) {
+			console.error("Ошибка при обновлении списка записанных", e);
 		}
 	};
 
@@ -156,6 +226,25 @@ const SchedulePage = () => {
 						emptyMessage="Нет занятий на этот день"
 						onRowClick={handleRowClick}
 					/>
+
+					{modalTime && selectedSlot && (
+						<BookingModal
+							time={modalTime}
+							isOpen={!!modalTime}
+							onClose={closeBookingModal}
+							slotId={selectedSlot.id}
+							onSubmit={async () => {
+								const freshSlots = await fetchSlots(); // теперь у нас обновлённые слоты
+
+								const updatedSlot = freshSlots.find(s => s.id === selectedSlot.id); // ищем по ним
+								if (updatedSlot) {
+									setSelectedSlot(updatedSlot);
+									await refreshBookedUsers(updatedSlot);
+								}
+							}}
+						/>
+					)}
+
 					{selectedSlot && bookedUsers.length > 0 && (
 						<>
 							<h3>Записавшиеся на слот {format(parseISO(selectedSlot.time), "HH:00")}</h3>

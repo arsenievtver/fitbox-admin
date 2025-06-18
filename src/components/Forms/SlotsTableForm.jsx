@@ -8,14 +8,17 @@ const HOURS = Array.from({ length: 12 }, (_, i) => {
 	return (hour < 10 ? '0' : '') + hour + ':00';
 });
 
-const TYPES = ['обычная', 'двойная'];
+const TYPES = [
+	{ label: 'Обычная', value: 'обычная' },
+	{ label: 'Двойная', value: 'двойная' }
+];
 
 const SlotsTableForm = forwardRef(({ selectedDate }, ref) => {
 	const [rows, setRows] = useState(
 		HOURS.map(time => ({
 			checked: false,
 			time,
-			type: 'обычная',
+			type: TYPES[0],
 			places: 20
 		}))
 	);
@@ -38,7 +41,7 @@ const SlotsTableForm = forwardRef(({ selectedDate }, ref) => {
 
 					// Просто отдаем ISO строку без смещений
 					return {
-						type: row.type,
+						type: row.type.value, // <-- берём строку, а не весь объект
 						time: localDate.toISOString(),
 						number_of_places: row.places
 					};
@@ -52,9 +55,9 @@ const SlotsTableForm = forwardRef(({ selectedDate }, ref) => {
 		setRows(newRows);
 	};
 
-	const handleTypeChange = (index, newType) => {
+	const handleTypeChange = (index, newTypeObj) => {
 		const newRows = [...rows];
-		newRows[index].type = newType;
+		newRows[index].type = newTypeObj;
 		setRows(newRows);
 	};
 
@@ -87,7 +90,7 @@ const SlotsTableForm = forwardRef(({ selectedDate }, ref) => {
 				<DropdownInput
 					value={rows[i].type}
 					options={TYPES}
-					onChange={(e) => handleTypeChange(i, e.target.value)}
+					onChange={(selected) => handleTypeChange(i, selected)}
 				/>
 			)
 		},
