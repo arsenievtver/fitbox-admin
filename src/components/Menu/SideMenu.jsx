@@ -7,6 +7,7 @@ const menuItems = [
 	{ id: 'stats', label: 'Статистика', path: '/statistics' },
 	{ id: 'clients', label: 'Клиенты', path: '/users' },
 	{ id: 'payments', label: 'Оплаты', path: '/finance' },
+	{ id: 'weight', label: 'Контроль веса', path: '/add_weight' },
 ];
 
 const SideMenu = () => {

@@ -7,6 +7,7 @@ import SchedulePage from "./pages/SchedulePage.jsx";
 import StatisticsPage from "./pages/StatisticsPage.jsx";
 import UsersPage from "./pages/UsersPage.jsx";
 import FinancePage from "./pages/FinancePage.jsx";
+import AddWeightPage from "./pages/AddWeight.jsx";
 
 const AppContent = () => {
 
@@ -21,6 +22,7 @@ const AppContent = () => {
                 <Route path="/finance" element={<FinancePage />} />
                 <Route path="/statistics" element={<StatisticsPage />} />
                 <Route path="/user/:id" element={<UserPage />} />
+                <Route path="/add_weight" element={<AddWeightPage />} />
             </Routes>
         </>
     );

@@ -10,8 +10,12 @@ import {
 } from 'recharts';
 import ButtonMy from '../Buttons/ButtonMy';
 import ModalBase from '../Modals/ModalBase.jsx';
-import DateInput from "../Forms/DateInput.jsx";
+import DateInput from '../Forms/DateInput.jsx';
 import InputBase from '../Forms/InputBase.jsx';
+import useApi from '../../hooks/useApi.hook';
+import { postWeightMeUrl } from '../../helpers/constants';
+import { useUser } from '../../context/UserContext';
+import { formatISO } from 'date-fns';
 
 const CustomTooltip = ({ active, payload }) => {
     if (active && payload && payload.length) {
@@ -25,7 +29,12 @@ const CustomTooltip = ({ active, payload }) => {
 };
 
 const WeightChart = ({ data = [] }) => {
+    const api = useApi();
+    const { refreshUser } = useUser();
+
     const [showModal, setShowModal] = useState(false);
+    const [weightInput, setWeightInput] = useState('');
+    const [dateInput, setDateInput] = useState(new Date());
 
     const { yMin, yMax } = useMemo(() => {
         if (data.length === 0) return { yMin: 0, yMax: 100 };
@@ -40,6 +49,32 @@ const WeightChart = ({ data = [] }) => {
     }, [data]);
 
     const handleOpenModal = () => setShowModal(true);
+    const handleCloseModal = () => setShowModal(false);
+
+    const handleSubmit = async () => {
+        // Заменяем запятую на точку
+        const normalizedWeight = parseFloat(weightInput.replace(',', '.'));
+
+        if (isNaN(normalizedWeight)) {
+            alert('Введите корректное значение веса');
+            return;
+        }
+
+        const payload = {
+            date: formatISO(dateInput, { representation: 'date' }), // YYYY-MM-DD
+            weight: normalizedWeight
+        };
+
+        try {
+            await api.post(postWeightMeUrl, payload);
+            alert('Запись добавлена');
+            handleCloseModal();
+            refreshUser(); // обновим юзера после добавления
+        } catch (e) {
+            console.error('Ошибка при добавлении веса', e);
+            alert('Не удалось добавить запись');
+        }
+    };
 
     return (
         <div style={{ width: '100%' }}>
@@ -71,22 +106,20 @@ const WeightChart = ({ data = [] }) => {
             </ResponsiveContainer>
 
             {showModal && (
-                <ModalBase onClose={() => setShowModal(false)}>
+                <ModalBase onClose={handleCloseModal}>
                     <div>
                         <h3 style={{ marginTop: 0 }}>Добавить измерение</h3>
-
                         <div className="modal-content">
-                            <DateInput />
-                            <InputBase placeholder="Введите вес" />
-                            <ButtonMy onClick={() => { /* пока пусто */ }}>
-                                Записать
-                            </ButtonMy>
+                            <DateInput value={dateInput} onChange={setDateInput} />
+                            <InputBase
+                                placeholder="Введите вес"
+                                value={weightInput}
+                                onChange={(e) => setWeightInput(e.target.value)}
+                            />
+                            <ButtonMy onClick={handleSubmit}>Записать</ButtonMy>
                         </div>
-
-                        {/* Вставь сюда форму или интерфейс добавления */}
                     </div>
                 </ModalBase>
-
             )}
         </div>
     );
