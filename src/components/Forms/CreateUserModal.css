@@ -1,0 +1,15 @@
+.modal-new-user{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    margin-top: 30px; /* чтобы контент не залезал под кнопку закрытия */
+    flex-wrap: wrap;
+    gap: 10px; /* отступы между элементами */
+    justify-content: flex-start;
+    flex-direction: column;
+    flex: unset !important;
+}

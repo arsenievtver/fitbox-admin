@@ -4,9 +4,11 @@ import './SideMenu.css';
 
 const menuItems = [
 	{ id: 'schedule', label: 'Расписание', path: '/schedule' },
-	{ id: 'stats', label: 'Статистика', path: '/statistics' },
 	{ id: 'clients', label: 'Клиенты', path: '/users' },
+	{ id: 'clients', label: 'Тренировка', path: '/training' },
 	{ id: 'payments', label: 'Оплаты', path: '/finance' },
+	{ id: 'stats', label: 'Статистика', path: '/statistics' },
+
 	{ id: 'weight', label: 'Контроль веса', path: '/add_weight' },
 ];
 

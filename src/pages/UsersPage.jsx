@@ -7,39 +7,40 @@ import { GetallusersUrl } from '../helpers/constants';
 import { FaFileAlt, FaEnvelope } from 'react-icons/fa';
 import './UsersPage.css';
 import { useNavigate } from "react-router-dom";
+import ButtonMy from '../components/Buttons/ButtonMy.jsx';
+import CreateUserModal from '../components/Forms/CreateUserModal.jsx';
 
 const UsersPage = () => {
 	const api = useApi();
+	const navigate = useNavigate();
 
 	const [users, setUsers] = useState([]);
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState(null);
+	const [createModalOpen, setCreateModalOpen] = useState(false);
+
+	const fetchUsers = async () => {
+		setLoading(true);
+		try {
+			const { data } = await api.get(GetallusersUrl);
+			const cleanedUsers = data.map(user => {
+				const nameParts = [user.last_name, user.name, user.father_name].filter(Boolean);
+				return {
+					...user,
+					fullName: nameParts.join(' ')
+				};
+			});
+			setUsers(cleanedUsers);
+		} catch (e) {
+			setError('Ошибка при загрузке пользователей');
+		} finally {
+			setLoading(false);
+		}
+	};
 
 	useEffect(() => {
-		const fetchUsers = async () => {
-			setLoading(true);
-			try {
-				const { data } = await api.get(GetallusersUrl);
-				console.log('Данные от API:', data);
-
-				const cleanedUsers = data.map(user => {
-					const nameParts = [user.last_name, user.name, user.father_name].filter(Boolean);
-					return {
-						...user,
-						fullName: nameParts.join(' ')
-					};
-				});
-
-				setUsers(cleanedUsers);
-			} catch (e) {
-				setError('Ошибка при загрузке пользователей');
-			} finally {
-				setLoading(false);
-			}
-		};
-
 		fetchUsers();
-	}, [api]);
+	}, []);
 
 	const columns = [
 		{ key: 'fullName', label: 'Фамилия Имя Отчество' },
@@ -79,12 +80,15 @@ const UsersPage = () => {
 		),
 	}));
 
-	const navigate = useNavigate();
-
 	return (
 		<MainLayout>
 			<div style={{ padding: 20 }} className="table-wrapper">
 				<h1 className="h1">Пользователи</h1>
+
+				<div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 16, marginTop: 16, marginRight: 20 }}>
+					<ButtonMy onClick={() => setCreateModalOpen(true)}>Добавить нового пользователя</ButtonMy>
+				</div>
+
 				<UniversalTable
 					columns={columns}
 					data={rows}
@@ -92,7 +96,14 @@ const UsersPage = () => {
 					emptyMessage="Пользователей не найдено"
 					onRowClick={(user) => navigate(`/user/${user.id}`)}
 				/>
+
 				{error && <div style={{ color: 'red', marginTop: 10 }}>{error}</div>}
+
+				<CreateUserModal
+					isOpen={createModalOpen}
+					onClose={() => setCreateModalOpen(false)}
+					onCreated={fetchUsers}
+				/>
 			</div>
 		</MainLayout>
 	);

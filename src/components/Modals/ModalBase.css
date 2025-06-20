@@ -22,6 +22,7 @@
     overflow-y: auto;
     animation: modal-fade-in 0.3s ease-out;
     transition: max-height 0.4s ease, padding 0.3s ease;
+    flex-direction: column;
 }
 
 .modal-overlay {
@@ -48,8 +49,9 @@
     display: flex;
     margin-top: 30px; /* чтобы контент не залезал под кнопку закрытия */
     flex-wrap: wrap;
-    gap: 15px; /* отступы между элементами */
+    gap: 10px; /* отступы между элементами */
     justify-content: flex-start;
+
 }
 
 /* Пусть дети занимают минимум 200px, максимум 1fr */

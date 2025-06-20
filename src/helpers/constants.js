@@ -14,5 +14,7 @@ export const deleteSlotUrl = (id) => `/api/v1/slots/${id}`;
 export const deleteBookingUrl = (id) => `/api/v1/bookings/${id}`;
 export const postWeightMeUrl = '/api/v1/records'
 
+export const GetOneUserBookingUrl = (id) => `api/v1/bookings/?user_id__in=${id}`;
+export const GetBookingFilterUrl = (slot_id) => `api/v1/bookings/?slot_id__in=${slot_id}`;
 export const getSlotsFilterUrl = (start_time, stop_time) =>
 	`/api/v1/slots/?time__gt=${encodeURIComponent(start_time)}&time__lt=${encodeURIComponent(stop_time)}`;

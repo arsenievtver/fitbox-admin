@@ -11,6 +11,7 @@ import PhoneInput from '../components/Forms/PhoneInput';
 import DateInput from '../components/Forms/DateInput.jsx';
 import DropdownInput from '../components/Forms/DropdownInput.jsx';
 import { PatchoneusersUrl } from '../helpers/constants';
+import UserBookingTable from '../components/Table/UserBookingTable';
 
 
 const formatDate = (dateStr) => {
@@ -24,7 +25,7 @@ const formatDate = (dateStr) => {
 };
 
 const Section = ({ title, children }) => {
-    const [expanded, setExpanded] = useState(true);
+    const [expanded, setExpanded] = useState(false);
     return (
         <div className="section">
             <div className="section-header" onClick={() => setExpanded(!expanded)}>
@@ -42,6 +43,7 @@ const EditableRow = ({ label, value, name, isEditing, onChange }) => (
         {isEditing ? (
             <InputBase
                 name={name}
+                type={name === 'email' ? 'email' : 'text'}
                 value={value ?? ''}
                 onChange={onChange}
                 placeholder={`Введите ${label.toLowerCase()}`}
@@ -49,6 +51,13 @@ const EditableRow = ({ label, value, name, isEditing, onChange }) => (
         ) : (
             <span className="value">{value ?? '-'}</span>
         )}
+    </div>
+);
+
+const UserRow = ({ label, value }) => (
+    <div className="row">
+        <span className="label">{label}</span>
+        <span className="value">{value}</span>
     </div>
 );
 
@@ -66,7 +75,6 @@ const UserPage = () => {
         { label: 'Муж', value: 'муж' },
         { label: 'Жен', value: 'жен' },
     ];
-
 
     useEffect(() => {
         const fetchUser = async () => {
@@ -94,14 +102,21 @@ const UserPage = () => {
     const handleSave = async () => {
         try {
             const payload = {
-                ...formData,
-                gender: formData.gender?.value || null,
+                // отправляем только нужные поля
+                phone: formData.phone,
+                email: formData.email,
+                name: formData.name ?? '',
+                last_name: formData.last_name ?? '',
+                father_name: formData.father_name ?? '',
+                date_of_birth: formData.date_of_birth ?? '',
+                gender: formData.gender?.value || '',
             };
 
-            const { data } = await api.patch(PatchoneusersUrl(id), payload);
-            setUser(data);
+            console.log('👉 payload:', payload); // Проверяем
 
-            // после сохранения снова оборачиваем gender
+            const { data } = await api.patch(PatchoneusersUrl(id), payload);
+
+            setUser(data);
             setFormData({
                 ...data,
                 gender: genderOptions.find(opt => opt.value === data.gender) || null,
@@ -112,9 +127,9 @@ const UserPage = () => {
             setTimeout(() => setShowSuccessMessage(false), 2000);
         } catch (error) {
             console.error('Ошибка при сохранении пользователя:', error);
+            alert('Не удалось сохранить пользователя. Проверьте введённые данные.');
         }
     };
-
 
 
 
@@ -129,9 +144,7 @@ const UserPage = () => {
     return (
         <MainLayout>
             {showSuccessMessage && (
-                <div className="success-toast">
-                    Данные успешно сохранены
-                </div>
+                <div className="success-toast">Данные успешно сохранены</div>
             )}
 
             <div className="user-avatar-block">
@@ -155,7 +168,7 @@ const UserPage = () => {
                                 <span className="label">Телефон:</span>
                                 <PhoneInput
                                     value={formData.phone ?? ''}
-                                    onChange={(e) => setFormData((prev) => ({ ...prev, phone: e.target.value }))}
+                                    onChange={(val) => setFormData((prev) => ({ ...prev, phone: val }))}
                                 />
                             </div>
                         ) : (
@@ -183,7 +196,6 @@ const UserPage = () => {
                                     />
                                 }
                             />
-
                         ) : (
                             <UserRow label="Пол:" value={user.gender || '-'} />
                         )}
@@ -212,17 +224,10 @@ const UserPage = () => {
                         <UserRow label="Количество тренировок:" value={user.count_trainings ?? 0} />
                     </Section>
                 </div>
+                <UserBookingTable userId={user.id} />
             </div>
         </MainLayout>
     );
 };
-
-
-const UserRow = ({ label, value }) => (
-    <div className="row">
-        <span className="label">{label}</span>
-        <span className="value">{value}</span>
-    </div>
-);
 
 export default UserPage;

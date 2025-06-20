@@ -5,17 +5,17 @@ const RadioGroup = ({ options, value, onChange, name }) => {
 	return (
 		<div className="radio-group">
 			{options.map((option) => (
-				<label key={option} className="radio-label">
+				<label key={option.value} className="radio-label">
 					<input
 						type="radio"
 						name={name}
-						value={option}
-						checked={value === option}
-						onChange={() => onChange(option)}
+						value={option.value}
+						checked={value === option.value}
+						onChange={() => onChange(option.value)}
 						className="radio-input"
 					/>
 					<span className="radio-custom" />
-					{option}
+					{option.label}
 				</label>
 			))}
 		</div>

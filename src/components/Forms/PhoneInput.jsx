@@ -2,10 +2,11 @@ import React from 'react';
 import './PhoneInput.css';
 
 const PhoneInput = ({ value, onChange, placeholder }) => {
-	// Убираем все кроме цифр, обрезаем до 10
 	const handleChange = (e) => {
-		const raw = e.target.value.replace(/\D/g, '').slice(0, 10);
-		onChange({ target: { value: raw } });
+		const digitsOnly = e.target.value.replace(/\D/g, ''); // Удаляем всё, кроме цифр
+		if (digitsOnly.length <= 10) {
+			onChange(digitsOnly);
+		}
 	};
 
 	return (
@@ -17,6 +18,7 @@ const PhoneInput = ({ value, onChange, placeholder }) => {
 				value={value}
 				onChange={handleChange}
 				placeholder={placeholder || 'Введите номер'}
+				inputMode="numeric"
 			/>
 		</div>
 	);
