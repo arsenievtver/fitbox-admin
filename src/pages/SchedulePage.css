@@ -3,7 +3,6 @@
     flex-direction: row;
     margin-top: 70px;
     gap: 32px;
-
     justify-content: flex-start; /* прилипает к левому краю */
     align-items: flex-start;
     flex-wrap: nowrap;

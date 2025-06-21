@@ -13,7 +13,7 @@ export const postBookingAdminsUrl = '/api/v1/bookings/by-admin';
 export const deleteSlotUrl = (id) => `/api/v1/slots/${id}`;
 export const deleteBookingUrl = (id) => `/api/v1/bookings/${id}`;
 export const postWeightMeUrl = '/api/v1/records'
-
+export const postWeightUrl = '/api/v1/records/by-admin'
 export const GetOneUserBookingUrl = (id) => `api/v1/bookings/?user_id__in=${id}`;
 export const GetBookingFilterUrl = (slot_id) => `api/v1/bookings/?slot_id__in=${slot_id}`;
 export const getSlotsFilterUrl = (start_time, stop_time) =>

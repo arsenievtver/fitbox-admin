@@ -5,7 +5,7 @@ import './SideMenu.css';
 const menuItems = [
 	{ id: 'schedule', label: 'Расписание', path: '/schedule' },
 	{ id: 'clients', label: 'Клиенты', path: '/users' },
-	{ id: 'clients', label: 'Тренировка', path: '/training' },
+	{ id: 'training', label: 'Тренировка', path: '/training' },
 	{ id: 'payments', label: 'Оплаты', path: '/finance' },
 	{ id: 'stats', label: 'Статистика', path: '/statistics' },
 

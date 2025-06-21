@@ -1,0 +1,15 @@
+.form-section{
+    margin-top: 90px;
+    margin-left: 40px; /* если надо прямо к краю */
+    margin-right: auto;
+    width: 500px;
+    background-color: var(--card-background);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
