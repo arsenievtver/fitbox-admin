@@ -18,3 +18,5 @@ export const GetOneUserBookingUrl = (id) => `api/v1/bookings/?user_id__in=${id}`
 export const GetBookingFilterUrl = (slot_id) => `api/v1/bookings/?slot_id__in=${slot_id}`;
 export const getSlotsFilterUrl = (start_time, stop_time) =>
 	`/api/v1/slots/?time__gt=${encodeURIComponent(start_time)}&time__lt=${encodeURIComponent(stop_time)}`;
+export const postPaymentAdminUrl = `/api/v1/transactions/by-admin`;
+export const postPaymentMeUrl = '/api/v1/transactions';

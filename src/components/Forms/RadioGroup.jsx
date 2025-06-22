@@ -10,8 +10,8 @@ const RadioGroup = ({ options, value, onChange, name }) => {
 						type="radio"
 						name={name}
 						value={option.value}
-						checked={value === option.value}
-						onChange={() => onChange(option.value)}
+						checked={value?.value === option.value}
+						onChange={() => onChange(option)}
 						className="radio-input"
 					/>
 					<span className="radio-custom" />
@@ -23,4 +23,3 @@ const RadioGroup = ({ options, value, onChange, name }) => {
 };
 
 export default RadioGroup;
-
