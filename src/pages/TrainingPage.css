@@ -1,0 +1,13 @@
+.all-conteiners {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    margin-top: 90px;
+}
+
+.container-left {
+    padding: 20px;
+}
+
+.container-right{
+}

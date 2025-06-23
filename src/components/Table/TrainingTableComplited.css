@@ -1,0 +1,4 @@
+.num-input {
+    width: 100px;
+    border: var(--primary-color) solid 1px;
+}

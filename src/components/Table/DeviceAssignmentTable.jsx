@@ -3,47 +3,25 @@ import React, { useState, useEffect } from 'react';
 import DateInput from '../Forms/DateInput';
 import DropdownInput from '../Forms/DropdownInput';
 import useApi from '../../hooks/useApi.hook';
-import { getSlotsFilterUrl, GetBookingFilterUrl, GetoneuserUrl } from '../../helpers/constants';
-import './DeviceAssignmentTable.css'
+import { GetBookingFilterUrl, GetoneuserUrl } from '../../helpers/constants';
+import './DeviceAssignmentTable.css';
 
 const allDevices = Array.from({ length: 10 }, (_, i) => ({
 	label: `BAG0${i + 1}`,
 	value: `BAG0${i + 1}`,
 }));
 
-const DeviceAssignmentTable = () => {
+const DeviceAssignmentTable = ({
+								   selectedSlot,
+								   setSelectedSlot,
+								   slots,
+								   selectedDate,
+								   setSelectedDate
+							   }) => {
 	const api = useApi();
-	const [selectedDate, setSelectedDate] = useState(() => new Date().toISOString().split('T')[0]);
-	const [slots, setSlots] = useState([]);
-	const [selectedSlot, setSelectedSlot] = useState(null);
 	const [bookings, setBookings] = useState([]);
 	const [userMap, setUserMap] = useState({});
 	const [assignments, setAssignments] = useState({});
-
-	// Загружаем слоты на выбранную дату
-	useEffect(() => {
-		const fetchSlots = async () => {
-			const startTime = `${selectedDate}T04:00:00`;
-			const endTime = `${selectedDate}T22:00:00`;
-			try {
-				const { data } = await api.get(getSlotsFilterUrl(startTime, endTime));
-				const options = data
-					.map((slot) => ({
-						label: new Date(slot.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-						value: slot.id
-					}))
-					.sort((a, b) => {
-						const timeA = new Date(`1970-01-01T${a.label}:00`);
-						const timeB = new Date(`1970-01-01T${b.label}:00`);
-						return timeA - timeB;
-					});
-				setSlots(options);
-			} catch (e) {
-				console.error('Ошибка при получении слотов:', e);
-			}
-		};
-		fetchSlots();
-	}, [selectedDate]);
 
 	// Загружаем записи и пользователей при выборе слота
 	useEffect(() => {
@@ -125,7 +103,6 @@ const DeviceAssignmentTable = () => {
 										onChange={(selected) => handleAssignmentChange(userId, selected)}
 										placeholder="Выберите устройство"
 									/>
-
 								</td>
 							</tr>
 						);
@@ -140,3 +117,4 @@ const DeviceAssignmentTable = () => {
 };
 
 export default DeviceAssignmentTable;
+
