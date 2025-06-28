@@ -218,10 +218,10 @@ const UserPage = () => {
                     </Section>
 
                     <Section title="Статистика">
-                        <UserRow label="Баланс тренировок:" value={user.balance_training ?? 0} />
-                        <UserRow label="Статус:" value={user.status ?? '-'} />
-                        <UserRow label="Прогресс в баллах:" value={user.score ?? 0} />
-                        <UserRow label="Количество тренировок:" value={user.count_trainings ?? 0} />
+                        <UserRow label="Баланс тренировок:" value={user.score ?? 0} />
+                        <UserRow label="Уровень:" value={user.status ?? '-'} />
+                        <UserRow label="Прогресс в баллах:" value={Math.round(user.energy) ?? 0} />
+                        <UserRow label="Проведено тренировок:" value={user.count_trainings ?? 0} />
                     </Section>
                 </div>
                 <UserBookingTable userId={user.id} />
