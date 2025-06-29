@@ -53,10 +53,10 @@ const CreateUserModal = ({ isOpen, onClose, onCreated }) => {
 
 	return (
 		<ModalBase onClose={onClose} className="modal-new-user">
-			<h3 style={{ textAlign: 'center', marginTop: 0, height: '40px' }}>Создать нового клиента</h3>
+			<h3 style={{ textAlign: 'center', marginTop: 0}}>Создать нового клиента</h3>
 
 			{/* Обёртка для двух колонок */}
-			<div style={{ display: 'flex', gap: 10, justifyContent: 'center' }}>
+			<div style={{ display: 'flex', gap: 10, justifyContent: 'space-around' }}>
 				{/* Левая колонка */}
 				<div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
 					<PhoneInput

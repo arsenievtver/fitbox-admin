@@ -53,9 +53,3 @@
     justify-content: flex-start;
 
 }
-
-/* Пусть дети занимают минимум 200px, максимум 1fr */
-.modal-content > * {
-    flex: 1 1 200px; /* flex-grow:1, flex-shrink:1, flex-basis:200px */
-    min-width: 150px; /* или сколько нужно */
-}
