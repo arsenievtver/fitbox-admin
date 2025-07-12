@@ -59,10 +59,10 @@ const TrainingPage = () => {
 			const response = await api.get(getStartAllUrl);
 			console.log('🚀 Ответ сервера:', response.data);
 			setServerResponse(`✅ START успешно: ${JSON.stringify(response.data)}`);
-			setStartSignal(true);
+			//setStartSignal(true);
 
 			// Автоматический сброс через 1 секунду
-			setTimeout(() => setStartSignal(false), 1000);
+			setTimeout(() => setStartSignal(false), 5000);
 		} catch (error) {
 			console.error('❌ Ошибка при отправке команды START:', error);
 			setServerResponse(`❌ Ошибка: ${error.message}`);
