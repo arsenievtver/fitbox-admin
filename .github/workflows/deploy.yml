@@ -1,0 +1,29 @@
+name: 🚀 Deploy Fitboxing Admin
+
+on:
+  push:
+    branches: [main]  # или другая ветка, если используешь
+
+jobs:
+  deploy:
+    name: 📦 Build and Deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🔁 Checkout repo
+        uses: actions/checkout@v3
+
+      - name: ⚙️ Install dependencies
+        run: npm ci
+
+      - name: 🧱 Build app
+        run: npm run build
+
+      - name: 🚚 Deploy via SSH
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: "dist/*"
+          target: "/home/arseniev/tver-admin"

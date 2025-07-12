@@ -5,7 +5,7 @@ import MainLayout from '../components/layouts/MainLayout';
 import DeviceAssignmentTable from '../components/Table/DeviceAssignmentTable.jsx';
 import BookingTable from '../components/Table/TrainingTableComplited';
 import useApi from '../hooks/useApi.hook';
-import { getSlotsFilterUrl } from '../helpers/constants';
+import { getSlotsFilterUrl, getStartAllUrl } from '../helpers/constants';
 import './TrainingPage.css';
 import StartButton from '../components/Buttons/StartButton.jsx';
 import TempoPlayer from '../components//player/TempoPlayer.jsx';
@@ -52,8 +52,27 @@ const TrainingPage = () => {
 		fetchSlots();
 	}, [selectedDate]);
 
+	const [serverResponse, setServerResponse] = useState(null);
+
+	const handleStartClick = async () => {
+		try {
+			const response = await api.get(getStartAllUrl);
+			console.log('🚀 Ответ сервера:', response.data);
+			setServerResponse(`✅ START успешно: ${JSON.stringify(response.data)}`);
+			setStartSignal(true);
+
+			// Автоматический сброс через 1 секунду
+			setTimeout(() => setStartSignal(false), 1000);
+		} catch (error) {
+			console.error('❌ Ошибка при отправке команды START:', error);
+			setServerResponse(`❌ Ошибка: ${error.message}`);
+		}
+	};
+
+
 	const handleStartFromMQTT = () => {
 		setStartSignal(true);
+		setTimeout(() => setStartSignal(false), 1000);
 	};
 
 	return (
@@ -77,7 +96,10 @@ const TrainingPage = () => {
 					)}
 				</div>
 			</div>
-			<StartButton />
+			<StartButton onClick={handleStartClick} />
+			<div style={{ textAlign: 'center', marginTop: '1rem', color: 'crimson' }}>
+				{serverResponse}
+			</div>
 		</MainLayout>
 	);
 };
