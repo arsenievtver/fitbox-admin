@@ -4,7 +4,7 @@ import mqtt from 'mqtt';
 
 const MqttListener = ({ onStart }) => {
 	useEffect(() => {
-		const client = mqtt.connect('wss://fitbox.bounceme.net:9001', {
+		const client = mqtt.connect('ws://fitbox.bounceme.net:9001', {
 			clientId: 'web-' + Math.random().toString(16).slice(2, 8),
 		});
 
