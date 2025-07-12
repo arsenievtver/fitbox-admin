@@ -1,39 +1,43 @@
-// src/helpers/ApiClient.jsx
 import axios from 'axios';
 import { PREFIX, JWT_STORAGE_KEY, refreshUrl } from './constants';
-import { parseISO, formatISO } from 'date-fns';
-import * as dateFnsTz from 'date-fns-tz';
 
-const MSK_TZ = 'Europe/Moscow';
+const REFRESH_TOKEN_KEY = 'refresh_token_ios';
 
-// Преобразуем ISO-строку времени из UTC в МСК и обратно в ISO строку
-function convertTimeStringToMSK(timeStr) {
+function isIOS() {
+	return /iPhone|iPad|iPod/.test(navigator.userAgent);
+}
+
+// Универсальный метод обновления токена
+export async function refreshTokenManually() {
+	const refresh_token = localStorage.getItem(REFRESH_TOKEN_KEY);
+
+	const instance = axios.create({
+		baseURL: PREFIX,
+		withCredentials: true
+	});
+
 	try {
-		const utcDate = parseISO(timeStr);
-		const zonedDate = dateFnsTz.utcToZonedTime(utcDate, MSK_TZ);
-		return formatISO(zonedDate);
-	} catch {
-		return timeStr;
+		let data;
+
+		if (isIOS()) {
+			if (!refresh_token) throw new Error('Missing refresh token on iOS');
+			({ data } = await instance.post(`${refreshUrl}?refresh_token=${refresh_token}`));
+		} else {
+			({ data } = await instance.post(refreshUrl, {}));
+		}
+
+		const newToken = data.access_token;
+		localStorage.setItem(JWT_STORAGE_KEY, newToken);
+		return newToken;
+
+	} catch (e) {
+		console.warn('🔁 Ошибка при refresh:', e.message || e);
+		localStorage.removeItem(JWT_STORAGE_KEY);
+		if (isIOS()) localStorage.removeItem(REFRESH_TOKEN_KEY);
+		throw e;
 	}
 }
 
-// Рекурсивно ищем в объекте поля с названием 'time' и конвертируем их
-function convertTimesInObject(obj) {
-	if (Array.isArray(obj)) {
-		return obj.map(convertTimesInObject);
-	} else if (obj && typeof obj === 'object') {
-		const newObj = {};
-		for (const key in obj) {
-			if (key === 'time' && typeof obj[key] === 'string') {
-				newObj[key] = convertTimeStringToMSK(obj[key]);
-			} else {
-				newObj[key] = convertTimesInObject(obj[key]);
-			}
-		}
-		return newObj;
-	}
-	return obj;
-}
 
 export function createApi(navigate) {
 	const api = axios.create({
@@ -41,6 +45,7 @@ export function createApi(navigate) {
 		withCredentials: true
 	});
 
+	// ⛳ Подставляем access token в каждый запрос
 	api.interceptors.request.use(cfg => {
 		if (!cfg.url.includes('refresh')) {
 			const t = localStorage.getItem(JWT_STORAGE_KEY);
@@ -58,12 +63,9 @@ export function createApi(navigate) {
 		queue = [];
 	};
 
+	// ⛳ Обрабатываем ошибки
 	api.interceptors.response.use(
-		resp => {
-			// Преобразуем все поля time в ответе в МСК
-			resp.data = convertTimesInObject(resp.data);
-			return resp;
-		},
+		resp => resp,
 		async (err) => {
 			const { response, config } = err;
 			const original = config;
@@ -71,7 +73,13 @@ export function createApi(navigate) {
 			if (response?.status === 401 && !original._retry) {
 				if (refreshing) {
 					return new Promise((res, rej) =>
-						subscribe((tok, e) => e ? rej(e) : res(api({ ...original, headers: { ...original.headers, Authorization: `Bearer ${tok}` } })))
+						subscribe((tok, e) => e
+							? rej(e)
+							: res(api({
+								...original,
+								headers: { ...original.headers, Authorization: `Bearer ${tok}` }
+							}))
+						)
 					);
 				}
 
@@ -79,17 +87,16 @@ export function createApi(navigate) {
 				refreshing = true;
 
 				try {
-					const { data } = await api.post(refreshUrl, {});
-					const newToken = data.access_token;
-					localStorage.setItem(JWT_STORAGE_KEY, newToken);
-					api.defaults.headers.Authorization = `Bearer ${newToken}`;
-					publish(newToken);
+					const newToken = await refreshTokenManually();
 
+					api.defaults.headers.Authorization = `Bearer ${newToken}`;
 					original.headers.Authorization = `Bearer ${newToken}`;
+					localStorage.setItem(JWT_STORAGE_KEY, newToken);
+
+					publish(newToken);
 					return api(original);
 				} catch (e) {
 					publish(null, e);
-					localStorage.removeItem(JWT_STORAGE_KEY);
 					navigate('/');
 					return Promise.reject(e);
 				} finally {
@@ -103,3 +110,4 @@ export function createApi(navigate) {
 
 	return api;
 }
+
