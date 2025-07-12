@@ -18,6 +18,7 @@ const Header = () => {
             console.error('Ошибка при выходе:', error);
         } finally {
             localStorage.removeItem(JWT_STORAGE_KEY);
+            localStorage.removeItem('refresh_token_ios');
             setUser(null);
             navigate('/');
         }
