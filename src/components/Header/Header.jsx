@@ -26,7 +26,6 @@ const Header = () => {
     return (
         <header className="header">
             <div className="logo-container">
-                Fitboxing club
             </div>
             <nav className="admin">
                 <a>Пользователь: {user?.name ?? '-'}</a>
