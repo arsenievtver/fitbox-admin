@@ -1,9 +1,10 @@
-.form-section{
+.form-section {
     margin-top: 90px;
     margin-bottom: 20px;
-    margin-left: 40px; /* если надо прямо к краю */
+    margin-left: auto;
     margin-right: auto;
-    width: 500px;
+    width: 100%;
+    max-width: 500px;
     height: 100%;
     background-color: var(--card-background);
     border: 1px solid var(--border-color);
@@ -14,4 +15,14 @@
     display: flex;
     flex-direction: column;
     gap: 10px;
+    box-sizing: border-box;
+}
+
+/* Медиазапрос для мобильных устройств */
+@media (max-width: 600px) {
+    .form-section {
+        margin-left: 10px;
+        margin-right: 10px;
+        width: calc(100% - 20px);
+    }
 }
