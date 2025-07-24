@@ -10,14 +10,16 @@ const DropdownInput = ({
 						   getOptionLabel = option => option?.label || option?.toString() || '',
 						   getOptionValue = option => option?.value || option?.toString(),
 						   isValid = true,
+						   disabled = false, // 👈 приходит как проп
 					   }) => {
-
 	const customStyles = {
 		control: (base) => ({
 			...base,
 			borderRadius: 10,
 			border: isValid ? '1px solid var(--primary-color)' : '1px solid red',
 			boxShadow: 'none',
+			backgroundColor: disabled ? '#f0f0f0' : 'white',
+			pointerEvents: disabled ? 'none' : 'auto',
 			'&:hover': {
 				borderColor: isValid ? 'var(--primary-color)' : 'red',
 			},
@@ -28,16 +30,14 @@ const DropdownInput = ({
 		}),
 		option: (base, state) => ({
 			...base,
-			backgroundColor:  state.isFocused
-				? 'rgba(63, 81, 181, 0.25)' // полупрозрачный var(--primary-color)
+			backgroundColor: state.isFocused
+				? 'rgba(63, 81, 181, 0.25)'
 				: 'white',
 			color: 'black',
 			cursor: 'pointer',
 			transition: 'background-color 0.2s ease',
 		}),
 	};
-
-
 
 	return (
 		<Select
@@ -49,8 +49,10 @@ const DropdownInput = ({
 			getOptionLabel={getOptionLabel}
 			getOptionValue={getOptionValue}
 			styles={customStyles}
+			isDisabled={disabled} // 👈 вот тут правильное свойство
 		/>
 	);
 };
 
 export default DropdownInput;
+

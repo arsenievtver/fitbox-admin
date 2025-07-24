@@ -8,6 +8,7 @@ const InputBase = ({
                        placeholder,
                        className = '',
                        type = 'text',
+                       disabled = false, // 👈 добавлено
                    }) => {
     const [touched, setTouched] = useState(false);
 
@@ -30,6 +31,7 @@ const InputBase = ({
         onChange,
         onBlur: handleBlur,
         placeholder,
+        disabled,
     };
 
     if (type === 'email') {

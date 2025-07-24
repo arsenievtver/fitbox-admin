@@ -1,14 +1,11 @@
-// src/pages/TrainingPage.jsx
-
 import React, { useState, useEffect } from 'react';
 import MainLayout from '../components/layouts/MainLayout';
 import DeviceAssignmentTable from '../components/Table/DeviceAssignmentTable.jsx';
-import BookingTable from '../components/Table/TrainingTableComplited';
+import SprintTable from '../components/Table/SprintTable.jsx';
 import useApi from '../hooks/useApi.hook';
-import { getSlotsFilterUrl, getStartAllUrl } from '../helpers/constants';
+import { getSlotsFilterUrl } from '../helpers/constants';
 import './TrainingPage.css';
-import StartButton from '../components/Buttons/StartButton.jsx';
-import TempoPlayer from '../components//player/TempoPlayer.jsx';
+import TempoPlayer from '../components/player/TempoPlayer.jsx';
 import MqttListener from '../components/mqtt/MqttListener.jsx';
 
 const TrainingPage = () => {
@@ -20,6 +17,7 @@ const TrainingPage = () => {
 	const [slots, setSlots] = useState([]);
 	const [selectedSlot, setSelectedSlot] = useState(null);
 	const [startSignal, setStartSignal] = useState(false); // 🚀 Сигнал от брокера
+	const [selectedTrack, setSelectedTrack] = useState(''); // Храним текущий выбранный трек
 
 	useEffect(() => {
 		const fetchSlots = async () => {
@@ -52,33 +50,20 @@ const TrainingPage = () => {
 		fetchSlots();
 	}, [selectedDate]);
 
-	const [serverResponse, setServerResponse] = useState(null);
-
-	const handleStartClick = async () => {
-		try {
-			const response = await api.get(getStartAllUrl);
-			console.log('🚀 Ответ сервера:', response.data);
-			setServerResponse(`✅ START успешно: ${JSON.stringify(response.data)}`);
-			//setStartSignal(true);
-
-			// Автоматический сброс через 1 секунду
-			setTimeout(() => setStartSignal(false), 5000);
-		} catch (error) {
-			console.error('❌ Ошибка при отправке команды START:', error);
-			setServerResponse(`❌ Ошибка: ${error.message}`);
-		}
-	};
-
-
 	const handleStartFromMQTT = () => {
 		setStartSignal(true);
-		setTimeout(() => setStartSignal(false), 1000);
+		setTimeout(() => setStartSignal(false), 119999);
+	};
+
+	// Коллбек для получения выбранного трека из SprintTable
+	const handleTrackSelect = (trackFile) => {
+		setSelectedTrack(trackFile);
 	};
 
 	return (
 		<MainLayout>
 			<MqttListener onStart={handleStartFromMQTT} />
-			<TempoPlayer play={startSignal} />
+			<TempoPlayer play={startSignal} track={selectedTrack} />
 
 			<div className="all-conteiners">
 				<div className="container-left">
@@ -92,13 +77,13 @@ const TrainingPage = () => {
 				</div>
 				<div className="container-right">
 					{selectedSlot?.value && (
-						<BookingTable slotId={selectedSlot.value} />
+						<SprintTable
+							slotId={selectedSlot.value}
+							slotTime={selectedSlot.label}
+							onTrackSelect={handleTrackSelect} // передаём коллбек
+						/>
 					)}
 				</div>
-			</div>
-			<StartButton onClick={handleStartClick} />
-			<div style={{ textAlign: 'center', marginTop: '1rem', color: 'crimson' }}>
-				{serverResponse}
 			</div>
 		</MainLayout>
 	);

@@ -1,21 +1,31 @@
-// components/TempoPlayer.jsx
 import { useRef, useEffect } from 'react';
 
-const TempoPlayer = ({ play }) => {
-	const audioRef = useRef();
+const TempoPlayer = ({ play, track }) => {
+	const audioRef = useRef(null);
 
 	useEffect(() => {
-		if (play && audioRef.current) {
-			audioRef.current.currentTime = 0;
-			audioRef.current.play().catch((e) => {
+		const audio = audioRef.current;
+		if (!audio) return;
+
+		if (track) {
+			audio.src = `/tracks/${track}`;
+			audio.load();
+		} else {
+			audio.removeAttribute('src');
+			audio.load();
+		}
+
+		if (play && track) {
+			audio.currentTime = 0;
+			audio.play().catch((e) => {
 				console.warn("🔇 Автовоспроизведение заблокировано:", e);
 			});
+		} else {
+			audio.pause();
 		}
-	}, [play]);
+	}, [play, track]);
 
-	return (
-		<audio ref={audioRef} src="/tracks/12345.mp3" preload="auto" />
-	);
+	return <audio ref={audioRef} preload="auto" />;
 };
 
 export default TempoPlayer;

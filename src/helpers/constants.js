@@ -21,4 +21,6 @@ export const getSlotsFilterUrl = (start_time, stop_time) =>
 export const postPaymentAdminUrl = `/api/v1/transactions/by-admin`;
 export const postPaymentMeUrl = '/api/v1/transactions';
 export const patchBookingUrl = (id) => `/api/v1/bookings/${id}`;
-export const getStartAllUrl = '/api/v1/sensors/start_all';
+export const postStartAllUrl = '/api/v1/sensors/start_all';
+export const postBindingBagsUrl = '/api/v1/slots/binding';
+export const getStatusDeviceUrl = '/api/v1/sensors/status';

@@ -3,13 +3,10 @@ import React, { useState, useEffect } from 'react';
 import DateInput from '../Forms/DateInput';
 import DropdownInput from '../Forms/DropdownInput';
 import useApi from '../../hooks/useApi.hook';
-import { GetBookingFilterUrl, GetoneuserUrl } from '../../helpers/constants';
+import { GetBookingFilterUrl, GetoneuserUrl, getStatusDeviceUrl, postBindingBagsUrl } from '../../helpers/constants';
 import './DeviceAssignmentTable.css';
+import ButtonMy from "../Buttons/ButtonMy.jsx";
 
-const allDevices = Array.from({ length: 10 }, (_, i) => ({
-	label: `BAG0${i + 1}`,
-	value: `BAG0${i + 1}`,
-}));
 
 const DeviceAssignmentTable = ({
 								   selectedSlot,
@@ -22,8 +19,28 @@ const DeviceAssignmentTable = ({
 	const [bookings, setBookings] = useState([]);
 	const [userMap, setUserMap] = useState({});
 	const [assignments, setAssignments] = useState({});
+	const [deviceOptions, setDeviceOptions] = useState([]);
+	const [isSubmitted, setIsSubmitted] = useState(false);
+	const [bindingSuccess, setBindingSuccess] = useState(false);
 
-	// Загружаем записи и пользователей при выборе слота
+
+	useEffect(() => {
+		const fetchDevices = async () => {
+			try {
+				const { data } = await api.get(getStatusDeviceUrl);
+				const deviceList = Object.keys(data.devices || {}).map((deviceName) => ({
+					label: deviceName,
+					value: deviceName,
+				}));
+				setDeviceOptions(deviceList);
+			} catch (error) {
+				console.error('Ошибка при загрузке устройств:', error);
+			}
+		};
+
+		fetchDevices();
+	}, []);
+
 	useEffect(() => {
 		if (!selectedSlot) return;
 
@@ -59,7 +76,7 @@ const DeviceAssignmentTable = ({
 			.filter(([userId]) => userId !== currentUserId)
 			.map(([, device]) => device?.value);
 
-		return allDevices.filter(device => !assignedValues.includes(device.value));
+		return deviceOptions.filter(device => !assignedValues.includes(device.value));
 	};
 
 	const handleAssignmentChange = (userId, device) => {
@@ -76,6 +93,7 @@ const DeviceAssignmentTable = ({
 					onChange={setSelectedSlot}
 					options={slots}
 					placeholder="Выберите слот"
+					disabled={isSubmitted}
 				/>
 			</div>
 
@@ -102,6 +120,7 @@ const DeviceAssignmentTable = ({
 										value={assignments[userId] || null}
 										onChange={(selected) => handleAssignmentChange(userId, selected)}
 										placeholder="Выберите устройство"
+										disabled={isSubmitted}
 									/>
 								</td>
 							</tr>
@@ -112,9 +131,48 @@ const DeviceAssignmentTable = ({
 			) : selectedSlot ? (
 				<p>Нет записей на выбранный слот.</p>
 			) : null}
+			{bookings.length > 0 && !isSubmitted && (
+				<ButtonMy
+					onClick={async () => {
+						try {
+							const bindings = Object.entries(assignments).map(([user_id, device]) => ({
+								user_id,
+								sensor_id: device.value
+							}));
+
+							await api.post(postBindingBagsUrl, {
+								slot_id: selectedSlot?.value,
+								bindings,
+							});
+
+							setIsSubmitted(true);
+							setBindingSuccess(true);
+						} catch (e) {
+							console.error('Ошибка при привязке:', e);
+							alert('Ошибка при отправке привязки');
+						}
+					}}
+					style={{
+						marginTop: '16px',
+						padding: '10px 20px',
+						backgroundColor: '#007bff',
+						color: '#fff',
+						border: 'none',
+						borderRadius: '5px',
+						cursor: 'pointer',
+					}}
+				>
+					Привязать
+				</ButtonMy>
+			)}
+
+			{bindingSuccess && (
+				<div style={{ marginTop: '16px', color: 'green', fontWeight: 'bold' }}>
+					✅ Успешно привязано!
+				</div>
+			)}
 		</div>
 	);
 };
 
 export default DeviceAssignmentTable;
-
