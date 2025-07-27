@@ -1,6 +1,6 @@
 import { useRef, useEffect } from 'react';
 
-const TempoPlayer = ({ play, track }) => {
+const TempoPlayer = ({ play, track, manualPlay }) => {
 	const audioRef = useRef(null);
 
 	useEffect(() => {
@@ -24,6 +24,15 @@ const TempoPlayer = ({ play, track }) => {
 			audio.pause();
 		}
 	}, [play, track]);
+
+	useEffect(() => {
+		if (manualPlay && audioRef.current) {
+			audioRef.current.src = '/tracks/beep.mp3';
+			audioRef.current.play().catch((e) => {
+				console.warn("🔇 Не удалось воспроизвести beep:", e);
+			});
+		}
+	}, [manualPlay]);
 
 	return <audio ref={audioRef} preload="auto" />;
 };

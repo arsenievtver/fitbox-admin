@@ -1,5 +1,5 @@
 // components/Admin/DeviceAssignmentTable.jsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
 import DateInput from '../Forms/DateInput';
 import DropdownInput from '../Forms/DropdownInput';
 import useApi from '../../hooks/useApi.hook';
@@ -8,13 +8,13 @@ import './DeviceAssignmentTable.css';
 import ButtonMy from "../Buttons/ButtonMy.jsx";
 
 
-const DeviceAssignmentTable = ({
+const DeviceAssignmentTable = forwardRef(({
 								   selectedSlot,
 								   setSelectedSlot,
 								   slots,
 								   selectedDate,
 								   setSelectedDate
-							   }) => {
+							   }, ref) => {
 	const api = useApi();
 	const [bookings, setBookings] = useState([]);
 	const [userMap, setUserMap] = useState({});
@@ -82,6 +82,10 @@ const DeviceAssignmentTable = ({
 	const handleAssignmentChange = (userId, device) => {
 		setAssignments((prev) => ({ ...prev, [userId]: device }));
 	};
+
+	useImperativeHandle(ref, () => ({
+		getBookings: () => bookings,
+	}));
 
 	return (
 		<div className='device-table-card'>
@@ -173,6 +177,6 @@ const DeviceAssignmentTable = ({
 			)}
 		</div>
 	);
-};
+});
 
 export default DeviceAssignmentTable;

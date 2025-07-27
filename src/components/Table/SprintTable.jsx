@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import Table from './Table';
 import InputBase from '../Forms/InputBase';
 import DropdownInput from "../Forms/DropdownInput.jsx";
@@ -6,9 +6,13 @@ import ButtonMy from '../Buttons/ButtonMy.jsx';
 import useApi from '../../hooks/useApi.hook';
 import { postStartAllUrl } from '../../helpers/constants';
 import { tracks } from '../../helpers/tracksList';
+import TempoPlayer from '../player/TempoPlayer';
 
 const SprintTable = ({ slotTime, slotId, onTrackSelect }) => {
 	const api = useApi();
+	const beepRef = useRef(null); // 👈 Ссылка на beep
+
+	const [isSoundUnlocked, setIsSoundUnlocked] = useState(false); // 👈 Новый флаг
 
 	const [rows, setRows] = useState(
 		Array.from({ length: 8 }, (_, i) => ({
@@ -20,6 +24,17 @@ const SprintTable = ({ slotTime, slotId, onTrackSelect }) => {
 	);
 
 	const [serverResponse, setServerResponse] = useState(null);
+
+	const handleUnlockSound = () => {
+		const beep = beepRef.current;
+		if (!beep) return;
+
+		beep.play()
+			.then(() => setIsSoundUnlocked(true))
+			.catch((e) => {
+				console.warn("❌ Не удалось воспроизвести звук:", e);
+			});
+	};
 
 	const handleRhythmChange = (index, value) => {
 		const updatedRows = [...rows];
@@ -133,9 +148,20 @@ const SprintTable = ({ slotTime, slotId, onTrackSelect }) => {
 
 	return (
 		<div className="p-4">
-			<h2 className="text-xl font-bold mb-4">
-				Тренировка на {slotTime} (ID: {slotId})
-			</h2>
+			<div className="flex justify-between items-center mb-4">
+				<h2 className="text-xl font-bold">
+					Тренировка на {slotTime} (ID: {slotId})
+				</h2>
+
+				{/* 🔊 Кнопка включения звука */}
+				{!isSoundUnlocked ? (
+					<ButtonMy onClick={handleUnlockSound}>
+						🔊 Включить звук
+					</ButtonMy>
+				) : (
+					<span className="text-green-600 font-semibold">✅ Звук включён</span>
+				)}
+			</div>
 
 			<Table columns={columns} data={rows} />
 
@@ -144,6 +170,9 @@ const SprintTable = ({ slotTime, slotId, onTrackSelect }) => {
 					{serverResponse}
 				</div>
 			)}
+
+			{/* 🔉 Невидимый аудио-элемент для beep */}
+			<audio ref={beepRef} src="/tracks/beep.mp3" preload="auto" />
 		</div>
 	);
 };

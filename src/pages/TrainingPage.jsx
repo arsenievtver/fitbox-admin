@@ -1,14 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import MainLayout from '../components/layouts/MainLayout';
 import DeviceAssignmentTable from '../components/Table/DeviceAssignmentTable.jsx';
 import SprintTable from '../components/Table/SprintTable.jsx';
 import useApi from '../hooks/useApi.hook';
-import { getSlotsFilterUrl } from '../helpers/constants';
+import { getSlotsFilterUrl, patchBookingUrl} from '../helpers/constants';
 import './TrainingPage.css';
 import TempoPlayer from '../components/player/TempoPlayer.jsx';
 import MqttListener from '../components/mqtt/MqttListener.jsx';
+import ButtonMy from "../components/Buttons/ButtonMy.jsx";
 
 const TrainingPage = () => {
+	const tableRef = useRef();
 	const api = useApi();
 
 	const [selectedDate, setSelectedDate] = useState(() =>
@@ -18,6 +20,7 @@ const TrainingPage = () => {
 	const [selectedSlot, setSelectedSlot] = useState(null);
 	const [startSignal, setStartSignal] = useState(false); // 🚀 Сигнал от брокера
 	const [selectedTrack, setSelectedTrack] = useState(''); // Храним текущий выбранный трек
+	const [isTrainingFinished, setIsTrainingFinished] = useState(false); // 👈 добавлено
 
 	useEffect(() => {
 		const fetchSlots = async () => {
@@ -60,6 +63,25 @@ const TrainingPage = () => {
 		setSelectedTrack(trackFile);
 	};
 
+	const handleFinishTraining = async () => {
+		const bookings = tableRef.current?.getBookings?.() || [];
+
+		try {
+			await Promise.all(
+				bookings.map((booking) =>
+					api.patch(patchBookingUrl(booking.id), {
+						is_done: true,
+					})
+				)
+			);
+			alert('✔ Тренировка успешно завершена!');
+			setIsTrainingFinished(true); // 👈 скрыть кнопку
+		} catch (error) {
+			console.error('❌ Ошибка при завершении тренировки:', error);
+			alert('❌ Ошибка при завершении тренировки. Попробуйте ещё раз.');
+		}
+	};
+
 	return (
 		<MainLayout>
 			<MqttListener onStart={handleStartFromMQTT} />
@@ -68,6 +90,7 @@ const TrainingPage = () => {
 			<div className="all-conteiners">
 				<div className="container-left">
 					<DeviceAssignmentTable
+						ref={tableRef}
 						selectedDate={selectedDate}
 						setSelectedDate={setSelectedDate}
 						selectedSlot={selectedSlot}
@@ -84,6 +107,11 @@ const TrainingPage = () => {
 						/>
 					)}
 				</div>
+			</div>
+			<div>
+				{!isTrainingFinished && (
+					<ButtonMy onClick={handleFinishTraining}>Завершить тренировку</ButtonMy>
+				)}
 			</div>
 		</MainLayout>
 	);
