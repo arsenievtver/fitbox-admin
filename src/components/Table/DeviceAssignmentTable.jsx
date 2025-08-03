@@ -89,7 +89,6 @@ const DeviceAssignmentTable = forwardRef(({
 
 	return (
 		<div className='device-table-card'>
-			<h3>Привязка спортсменов к грушам</h3>
 			<div className='device-form'>
 				<DateInput value={selectedDate} onChange={setSelectedDate} />
 				<DropdownInput

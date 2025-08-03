@@ -88,7 +88,10 @@ const TrainingPage = () => {
 			<TempoPlayer play={startSignal} track={selectedTrack} />
 
 			<div className="all-conteiners">
-				<div className="container-left">
+				<div className="container-left-tr">
+					<h2 className="text-xl font-bold">
+						Привязка спортсменов к грушам
+					</h2>
 					<DeviceAssignmentTable
 						ref={tableRef}
 						selectedDate={selectedDate}
@@ -98,7 +101,7 @@ const TrainingPage = () => {
 						slots={slots}
 					/>
 				</div>
-				<div className="container-right">
+				<div className="container-right-tr">
 					{selectedSlot?.value && (
 						<SprintTable
 							slotId={selectedSlot.value}
