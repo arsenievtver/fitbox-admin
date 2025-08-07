@@ -3,9 +3,6 @@ import { PREFIX, JWT_STORAGE_KEY, refreshUrl } from './constants';
 
 const REFRESH_TOKEN_KEY = 'refresh_token_ios';
 
-function isIOS() {
-	return /iPhone|iPad|iPod/.test(navigator.userAgent);
-}
 
 // Универсальный метод обновления токена
 export async function refreshTokenManually() {
@@ -19,21 +16,28 @@ export async function refreshTokenManually() {
 	try {
 		let data;
 
-		if (isIOS()) {
-			if (!refresh_token) throw new Error('Missing refresh token on iOS');
+		// Используем refresh_token, если он есть
+		if (refresh_token) {
 			({ data } = await instance.post(`${refreshUrl}?refresh_token=${refresh_token}`));
 		} else {
 			({ data } = await instance.post(refreshUrl, {}));
 		}
 
 		const newToken = data.access_token;
+
 		localStorage.setItem(JWT_STORAGE_KEY, newToken);
+
+		// 🔐 если сервер прислал новый refresh_token — сохраним
+		if (data.refresh_token) {
+			localStorage.setItem(REFRESH_TOKEN_KEY, data.refresh_token);
+		}
+
 		return newToken;
 
 	} catch (e) {
 		console.warn('🔁 Ошибка при refresh:', e.message || e);
 		localStorage.removeItem(JWT_STORAGE_KEY);
-		if (isIOS()) localStorage.removeItem(REFRESH_TOKEN_KEY);
+		localStorage.removeItem(REFRESH_TOKEN_KEY);
 		throw e;
 	}
 }
