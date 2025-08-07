@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { PREFIX, JWT_STORAGE_KEY, refreshUrl } from './constants';
 
-const REFRESH_TOKEN_KEY = 'refresh_token_ios';
+const REFRESH_TOKEN_KEY = 'refresh_token';
 
 
 // Универсальный метод обновления токена
