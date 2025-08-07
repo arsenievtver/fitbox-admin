@@ -10,7 +10,7 @@ import { loginUrl, JWT_STORAGE_KEY } from '../helpers/constants';
 import { useUser } from '../context/UserContext';
 
 const StartPage = () => {
-    const REFRESH_TOKEN_KEY = 'refresh_token_ios';
+    const REFRESH_TOKEN_KEY = 'refresh_token';
     const navigate = useNavigate();
     const api = useApi();
 
@@ -27,10 +27,6 @@ const StartPage = () => {
         }
     }, [user, navigate]);
 
-    function isIOS() {
-        return /iPhone|iPad|iPod/.test(navigator.userAgent);
-    }
-
     const handleLogin = async () => {
         try {
             const params = new URLSearchParams();
@@ -46,7 +42,7 @@ const StartPage = () => {
             localStorage.setItem(JWT_STORAGE_KEY, data.access_token);
 
             // 👇 Добавляем это:
-            if (isIOS() && data.refresh_token) {
+            if (data.refresh_token) {
                 localStorage.setItem(REFRESH_TOKEN_KEY, data.refresh_token);
             }
 
