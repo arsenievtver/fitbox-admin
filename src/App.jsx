@@ -10,6 +10,7 @@ import FinancePage from "./pages/FinancePage.jsx";
 import AddWeightPage from "./pages/AddWeight.jsx";
 import TrainingPage from "./pages/TrainingPage.jsx";
 import DisplayPage from "./pages/DisplayPage.jsx";
+import AdminPanel_test from "./pages/adminPanel_test.jsx";
 
 const AppContent = () => {
 
@@ -27,6 +28,7 @@ const AppContent = () => {
                 <Route path="/training" element={<TrainingPage />} />
                 <Route path="/add_weight" element={<AddWeightPage />} />
                 <Route path="/display" element={<DisplayPage />} />
+                <Route path="/display_test" element={<AdminPanel_test />} />
             </Routes>
         </>
     );
