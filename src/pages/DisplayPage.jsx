@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 const DisplayPage = ({ isPreview = false }) => {
 	const [mode, setMode] = useState('waiting');
 	const [users, setUsers] = useState([]);
-	const backgroundVideo = "/videos/wait.mp4";
+	const backgroundVideo = "https://storage.yandexcloud.net/files-for-sites/zastavka.mp4";
 	const logoUrl = "/images/logo-black.png";
 
 	useEffect(() => {
