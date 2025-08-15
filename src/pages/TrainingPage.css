@@ -1,13 +1,18 @@
 .all-conteiners {
+    width: 100%;
     display: flex;
     flex-direction: row;
     gap: 10px;
     margin-top: 90px;
+    justify-content: space-around;
+    align-items: start;
+
 }
 
 .container-left {
-    padding: 20px;
+    width: 100%;
 }
 
 .container-right{
+    width: 100%;
 }

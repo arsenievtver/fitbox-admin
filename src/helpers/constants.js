@@ -1,4 +1,5 @@
 export const PREFIX = 'https://fitbox.bounceme.net';
+export const PHOTO_BASE_URL = 'http://fitbox.bounceme.net/api/static/photos/';
 export const loginUrl = '/api/v1/auth/jwt/login';
 export const refreshUrl = '/api/v1/auth/jwt/refresh';
 export const JWT_STORAGE_KEY = 'jwt_token';
@@ -24,3 +25,5 @@ export const patchBookingUrl = (id) => `/api/v1/bookings/${id}`;
 export const postStartAllUrl = '/api/v1/sensors/start_all';
 export const postBindingBagsUrl = '/api/v1/slots/binding';
 export const getStatusDeviceUrl = '/api/v1/sensors/status';
+export const PostGetSlotResultsUrl = (slot_id) => `api/v1/slots/results/${slot_id}?no_cache=false&recalculate=false`;
+export const PostGetSprintResultsUrl = (slot_id, sprint_id) => `api/v1/slots/results/${slot_id}/sprint/${sprint_id}?no_cache=false&recalculate=false`;

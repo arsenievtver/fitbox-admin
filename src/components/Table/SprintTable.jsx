@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Table from './Table';
 import InputBase from '../Forms/InputBase';
 import DropdownInput from "../Forms/DropdownInput.jsx";
@@ -6,34 +6,30 @@ import ButtonMy from '../Buttons/ButtonMy.jsx';
 import useApi from '../../hooks/useApi.hook';
 import { postStartAllUrl } from '../../helpers/constants';
 import { tracks } from '../../helpers/tracksList';
-import TempoPlayer from '../player/TempoPlayer';
+import "./SprintTable.css";
 
-const SprintTable = ({ slotTime, slotId, onTrackSelect }) => {
+const SprintTable = ({ slotTime, slotId, onTrackSelect, onSprintFinished }) => {
 	const api = useApi();
-	const beepRef = useRef(null); // 👈 Ссылка на beep
+	const beepRef = useRef(null);
 
-	const [isSoundUnlocked, setIsSoundUnlocked] = useState(false); // 👈 Новый флаг
-
+	const [isSoundUnlocked, setIsSoundUnlocked] = useState(false);
 	const [rows, setRows] = useState(
 		Array.from({ length: 8 }, (_, i) => ({
 			id: i + 1,
 			track: '',
 			rhythm: 500,
-			started: false
+			started: false,
+			remainingTime: 0,
 		}))
 	);
-
 	const [serverResponse, setServerResponse] = useState(null);
+
+	const intervalsRef = useRef({});
 
 	const handleUnlockSound = () => {
 		const beep = beepRef.current;
 		if (!beep) return;
-
-		beep.play()
-			.then(() => setIsSoundUnlocked(true))
-			.catch((e) => {
-				console.warn("❌ Не удалось воспроизвести звук:", e);
-			});
+		beep.play().then(() => setIsSoundUnlocked(true)).catch(console.warn);
 	};
 
 	const handleRhythmChange = (index, value) => {
@@ -42,32 +38,49 @@ const SprintTable = ({ slotTime, slotId, onTrackSelect }) => {
 		setRows(updatedRows);
 	};
 
+	const handleTrackChange = (index, file) => {
+		const updatedRows = [...rows];
+		updatedRows[index].track = file;
+		setRows(updatedRows);
+		if (file && onTrackSelect) onTrackSelect(file);
+	};
+
 	const handleStart = async (sprintId) => {
-		const rowIndex = rows.findIndex((r) => r.id === sprintId);
-		if (rowIndex === -1) return;
+		const rowIndex = rows.findIndex(r => r.id === sprintId);
+		if (rowIndex === -1 || rows[rowIndex].started) return;
 
 		const row = rows[rowIndex];
-
-		// 👉 добавим: передаем трек вверх при старте
-		if (row.track && onTrackSelect) {
-			onTrackSelect(row.track);
-		}
-
-		const payload = {
-			session_id: slotId,
-			sprint_id: sprintId,
-			blink_interval: row.rhythm,
-			led_on_ms: 50
-		};
+		if (row.track && onTrackSelect) onTrackSelect(row.track);
 
 		try {
-			const response = await api.post(postStartAllUrl, payload);
-			console.log('🚀 Ответ сервера:', response.data);
-			setServerResponse(`✅ START успешно: ${JSON.stringify(response.data)}`);
+			await api.post(postStartAllUrl, {
+				session_id: slotId,
+				sprint_id: sprintId,
+				blink_interval: row.rhythm,
+				led_on_ms: 50,
+			});
 
-			const updatedRows = [...rows];
-			updatedRows[rowIndex].started = true;
-			setRows(updatedRows);
+			setRows(prevRows =>
+				prevRows.map(r =>
+					r.id === sprintId ? { ...r, started: true, remainingTime: 2 * 60 + 7 } : r
+				)
+			);
+
+			// Создаём один интервал на спринт
+			if (!intervalsRef.current[sprintId]) {
+				intervalsRef.current[sprintId] = setInterval(() => {
+					setRows(prevRows =>
+						prevRows.map(r => {
+							if (r.id !== sprintId) return r;
+							if (r.remainingTime > 0) return { ...r, remainingTime: r.remainingTime - 1 };
+							clearInterval(intervalsRef.current[sprintId]);
+							delete intervalsRef.current[sprintId];
+							if (onSprintFinished) setTimeout(() => onSprintFinished(slotId, sprintId), 0);
+							return r;
+						})
+					);
+				}, 1000);
+			}
 
 			setTimeout(() => setServerResponse(null), 5000);
 		} catch (error) {
@@ -76,75 +89,65 @@ const SprintTable = ({ slotTime, slotId, onTrackSelect }) => {
 		}
 	};
 
-
-	const handleTrackChange = (index, file) => {
-		const updatedRows = [...rows];
-		updatedRows[index].track = file;
-		setRows(updatedRows);
-
-		if (file && onTrackSelect) {
-			onTrackSelect(file); // Передаем выбранный трек наверх
-		}
+	const formatTime = seconds => {
+		const min = Math.floor(seconds / 60);
+		const sec = seconds % 60;
+		return `${min}:${sec.toString().padStart(2, '0')}`;
 	};
 
-	const columns = [
-		{ label: 'N', key: 'id', renderCell: (row) => row.id },
+	useEffect(() => {
+		return () => {
+			Object.values(intervalsRef.current).forEach(clearInterval);
+			intervalsRef.current = {};
+		};
+	}, []);
 
+	const columns = [
+		{ label: 'N', key: 'id', renderCell: row => row.id },
 		{
 			label: 'Музыка',
 			key: 'track',
 			renderCell: (row, index) => (
 				<DropdownInput
-					options={tracks.map((track) => ({
-						label: track.name,
-						value: track.file
-					}))}
-					value={
-						row.track
-							? {
-								label: tracks.find((t) => t.file === row.track)?.name,
-								value: row.track
-							}
-							: null
-					}
-					onChange={(selectedOption) =>
-						handleTrackChange(index, selectedOption ? selectedOption.value : '')
-					}
+					options={tracks.map(t => ({ label: t.name, value: t.file }))}
+					value={row.track ? { label: tracks.find(t => t.file === row.track)?.name, value: row.track } : null}
+					onChange={opt => handleTrackChange(index, opt ? opt.value : '')}
 					placeholder="-- выбери трек --"
-					isClearable={true}
-					isDisabled={row.started} // ✅ ← вот тут главное изменение
+					isClearable
+					isDisabled={row.started}
 				/>
 			)
 		},
-
 		{
 			label: 'Ритм',
 			key: 'rhythm',
 			renderCell: (row, index) => (
 				<InputBase
 					type="number"
-					name={`rhythm-${row.id}`}
+					className="ritm_num"
 					value={row.rhythm}
-					onChange={(e) => handleRhythmChange(index, e.target.value)}
-					disabled={row.started} // ✅ ← и тут
+					onChange={e => handleRhythmChange(index, e.target.value)}
+					disabled={row.started}
 				/>
 			)
 		},
-
 		{
 			label: '',
 			key: 'action',
-			renderCell: (row) =>
-				row.started ? (
-					<span className="text-green-600 font-semibold">✔ Запущено</span>
-				) : (
-					<ButtonMy onClick={() => handleStart(row.id)}>
-						Старт
-					</ButtonMy>
-				)
+			renderCell: row => (
+				<div className="flex items-center gap-2">
+					{row.started ? (
+						<>
+							<span className="text-green-600 font-semibold">✔ Запущено </span>
+							<span className="text-blue-600 font-mono">{formatTime(row.remainingTime)}</span>
+						</>
+					) : (
+						<ButtonMy onClick={() => handleStart(row.id)}>Старт</ButtonMy>
+					)}
+				</div>
+			)
 		}
 	];
-
 
 	return (
 		<div className="p-4">
@@ -152,12 +155,8 @@ const SprintTable = ({ slotTime, slotId, onTrackSelect }) => {
 				<h2 className="text-xl font-bold">
 					Тренировка на {slotTime} (ID: {slotId})
 				</h2>
-
-				{/* 🔊 Кнопка включения звука */}
 				{!isSoundUnlocked ? (
-					<ButtonMy onClick={handleUnlockSound}>
-						🔊 Включить звук
-					</ButtonMy>
+					<ButtonMy onClick={handleUnlockSound}>🔊 Включить звук</ButtonMy>
 				) : (
 					<span className="text-green-600 font-semibold">✅ Звук включён</span>
 				)}
@@ -171,7 +170,6 @@ const SprintTable = ({ slotTime, slotId, onTrackSelect }) => {
 				</div>
 			)}
 
-			{/* 🔉 Невидимый аудио-элемент для beep */}
 			<audio ref={beepRef} src="/tracks/beep.mp3" preload="auto" />
 		</div>
 	);
