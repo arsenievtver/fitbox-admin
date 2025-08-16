@@ -151,7 +151,7 @@ const UserPage = () => {
                 <img src="/images/avatar.webp" alt="Аватар" className="avatar-img" />
                 <div className="username">{user.name} {user.last_name}</div>
                 {!isEditing ? (
-                    <ButtonMy onClick={() => setIsEditing(true)} className="button_exit">Редактировать</ButtonMy>
+                    <ButtonMy onClick={() => setIsEditing(true)}>Редактировать</ButtonMy>
                 ) : (
                     <div className="button-edit-group">
                         <ButtonMy onClick={handleSave}>Сохранить</ButtonMy>

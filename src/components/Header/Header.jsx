@@ -30,7 +30,7 @@ const Header = () => {
             </div>
             <nav className="admin">
                 <a>Пользователь: {user?.name ?? '-'}</a>
-                <ButtonMy onClick={handleLogout} className="button_exit">Выйти</ButtonMy>
+                <ButtonMy onClick={handleLogout} >Выйти</ButtonMy>
             </nav>
         </header>
     );

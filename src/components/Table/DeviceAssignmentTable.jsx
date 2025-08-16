@@ -22,7 +22,7 @@ const DeviceAssignmentTable = forwardRef(({
 	const [deviceOptions, setDeviceOptions] = useState([]);
 	const [isSubmitted, setIsSubmitted] = useState(false);
 	const [bindingSuccess, setBindingSuccess] = useState(false);
-
+	const [loadingUsers, setLoadingUsers] = useState(false);
 
 	useEffect(() => {
 		const fetchDevices = async () => {
@@ -45,6 +45,7 @@ const DeviceAssignmentTable = forwardRef(({
 		if (!selectedSlot) return;
 
 		const fetchBookingsAndUsers = async () => {
+			setLoadingUsers(true);
 			try {
 				const { data: bookingData } = await api.get(GetBookingFilterUrl(selectedSlot.value));
 				setBookings(bookingData);
@@ -65,6 +66,9 @@ const DeviceAssignmentTable = forwardRef(({
 				setUserMap(users);
 			} catch (e) {
 				console.error('Ошибка при получении записей:', e);
+			} finally {
+				// ▼ ДОБАВЛЕНО:
+				setLoadingUsers(false);
 			}
 		};
 
@@ -100,7 +104,9 @@ const DeviceAssignmentTable = forwardRef(({
 				/>
 			</div>
 
-			{bookings.length > 0 ? (
+			{loadingUsers ? (
+				<p style={{ opacity: 0.7 }}>Загружаем пользователей…</p>
+			) : bookings.length > 0 ? (
 				<table style={{ width: '100%', borderCollapse: 'collapse' }}>
 					<thead>
 					<tr>
@@ -134,7 +140,7 @@ const DeviceAssignmentTable = forwardRef(({
 			) : selectedSlot ? (
 				<p>Нет записей на выбранный слот.</p>
 			) : null}
-			{bookings.length > 0 && !isSubmitted && (
+			{bookings.length > 0 && !isSubmitted && !loadingUsers && (
 				<ButtonMy
 					onClick={async () => {
 						try {
@@ -158,10 +164,6 @@ const DeviceAssignmentTable = forwardRef(({
 					style={{
 						marginTop: '16px',
 						padding: '10px 20px',
-						backgroundColor: '#007bff',
-						color: '#fff',
-						border: 'none',
-						borderRadius: '5px',
 						cursor: 'pointer',
 					}}
 				>

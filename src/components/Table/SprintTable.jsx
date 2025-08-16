@@ -46,6 +46,11 @@ const SprintTable = ({ slotTime, slotId, onTrackSelect, onSprintFinished }) => {
 	};
 
 	const handleStart = async (sprintId) => {
+		if (!isSoundUnlocked) {
+			setServerResponse('🔊 Сначала включи звук, затем запускай спринт');
+			setTimeout(() => setServerResponse(null), 4000);
+			return;
+		}
 		const rowIndex = rows.findIndex(r => r.id === sprintId);
 		if (rowIndex === -1 || rows[rowIndex].started) return;
 
@@ -134,18 +139,32 @@ const SprintTable = ({ slotTime, slotId, onTrackSelect, onSprintFinished }) => {
 		{
 			label: '',
 			key: 'action',
-			renderCell: row => (
-				<div className="flex items-center gap-2">
-					{row.started ? (
-						<>
-							<span className="text-green-600 font-semibold">✔ Запущено </span>
-							<span className="text-blue-600 font-mono">{formatTime(row.remainingTime)}</span>
-						</>
-					) : (
-						<ButtonMy onClick={() => handleStart(row.id)}>Старт</ButtonMy>
-					)}
-				</div>
-			)
+			renderCell: row => {
+				const startDisabled = !isSoundUnlocked || row.started;
+				return (
+					<div className="flex items-center gap-2">
+						{row.started ? (
+							<>
+								<span className="text-green-600 font-semibold">✔ Запущено </span>
+								<span className="text-blue-600 font-mono">{formatTime(row.remainingTime)}</span>
+							</>
+						) : (
+							<ButtonMy
+								onClick={() => handleStart(row.id)}
+								disabled={startDisabled}                         // если поддерживается
+								title={!isSoundUnlocked ? "Сначала включи звук 🔊" : "Запустить"}
+								style={{
+									opacity: startDisabled ? 0.6 : 1,
+									cursor: startDisabled ? 'not-allowed' : 'pointer',
+									pointerEvents: startDisabled ? 'none' : 'auto', // если disabled не прокидывается внутрь
+								}}
+							>
+								Старт
+							</ButtonMy>
+						)}
+					</div>
+				);
+			}
 		}
 	];
 
