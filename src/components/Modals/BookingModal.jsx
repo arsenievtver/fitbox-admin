@@ -78,7 +78,7 @@ const BookingModal = ({ isOpen, onClose, onSubmit, slotId }) => {
 					placeholder="Выберите пользователя"
 					isClearable={true}
 				/>
-				<ButtonMy className="button-new-booking">Записать</ButtonMy>
+				<ButtonMy>Записать</ButtonMy>
 			</form>
 		</ModalBase>
 	);
