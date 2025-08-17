@@ -148,7 +148,17 @@ const UserPage = () => {
             )}
 
             <div className="user-avatar-block">
-                <img src="/images/avatar.webp" alt="Аватар" className="avatar-img" />
+                <img
+                    src={
+                        user.photo_url
+                            ? user.photo_url
+                            : user.gender === "жен"
+                                ? "/images/avatar-f-y.webp"
+                                : "/images/avatar.webp"
+                    }
+                    alt="Аватар"
+                    className="avatar-img"
+                />
                 <div className="username">{user.name} {user.last_name}</div>
                 {!isEditing ? (
                     <ButtonMy onClick={() => setIsEditing(true)}>Редактировать</ButtonMy>
@@ -159,6 +169,7 @@ const UserPage = () => {
                     </div>
                 )}
             </div>
+
 
             <div className="user_data_card">
                 <div className="user_data">
