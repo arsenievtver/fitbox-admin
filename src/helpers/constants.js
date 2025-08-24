@@ -27,3 +27,4 @@ export const postBindingBagsUrl = '/api/v1/slots/binding';
 export const getStatusDeviceUrl = '/api/v1/sensors/status';
 export const PostGetSlotResultsUrl = (slot_id) => `api/v1/slots/results/${slot_id}?no_cache=false&recalculate=false`;
 export const PostGetSprintResultsUrl = (slot_id, sprint_id) => `api/v1/slots/results/${slot_id}/sprint/${sprint_id}?no_cache=false&recalculate=false`;
+export const PostTrainingComplitedUrl = (slot_id) => `api/v1/slots/complete_training/${slot_id}`;

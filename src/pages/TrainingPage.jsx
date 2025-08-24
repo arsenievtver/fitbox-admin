@@ -3,7 +3,7 @@ import MainLayout from '../components/layouts/MainLayout';
 import DeviceAssignmentTable from '../components/Table/DeviceAssignmentTable.jsx';
 import SprintTable from '../components/Table/SprintTable.jsx';
 import useApi from '../hooks/useApi.hook';
-import { getSlotsFilterUrl, patchBookingUrl } from '../helpers/constants';
+import { getSlotsFilterUrl, PostTrainingComplitedUrl } from '../helpers/constants';
 import './TrainingPage.css';
 import TempoPlayer from '../components/player/TempoPlayer.jsx';
 import MqttListener from '../components/mqtt/MqttListener.jsx';
@@ -51,9 +51,13 @@ const TrainingPage = () => {
 	};
 
 	const handleFinishTraining = async () => {
-		const bookings = tableRef.current?.getBookings?.() || [];
+		if (!selectedSlot?.value) {
+			alert('❗ Сначала выберите слот для завершения тренировки.');
+			return;
+		}
+
 		try {
-			await Promise.all(bookings.map(b => api.patch(patchBookingUrl(b.id), { is_done: true })));
+			await api.post(PostTrainingComplitedUrl(selectedSlot.value), {}); // тело пустое
 			alert('✔ Тренировка успешно завершена!');
 			setIsTrainingFinished(true);
 		} catch (error) {
