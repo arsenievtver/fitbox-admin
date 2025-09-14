@@ -43,8 +43,8 @@ const UserBookingTable = ({ userId }) => {
 
 			const doneMatches =
 				filterIsDone === 'all' ||
-				(filterIsDone === 'yes' && b.is_done) ||
-				(filterIsDone === 'no' && !b.is_done);
+				(filterIsDone === 'yes' && b.slot.is_done) ||
+				(filterIsDone === 'no' && !b.slot.is_done);
 
 			return afterStart && beforeEnd && doneMatches;
 		});
@@ -92,7 +92,7 @@ const UserBookingTable = ({ userId }) => {
 		id: b.id,
 		date: format(parseISO(b.slot.time), 'dd.MM.yyyy HH:mm'),
 		type: b.slot.type,
-		is_done: b.is_done ? 'да' : 'нет',
+		is_done: b.slot.is_done ? 'да' : 'нет',
 		power: b.power ?? '-',
 		energy: b.energy ?? '-',
 		tempo: b.tempo ?? '-',
