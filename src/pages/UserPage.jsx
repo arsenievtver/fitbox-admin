@@ -110,6 +110,7 @@ const UserPage = () => {
                 father_name: formData.father_name ?? '',
                 date_of_birth: formData.date_of_birth ?? '',
                 gender: formData.gender?.value || '',
+                telegram_id: formData.telegram_id ?? '',   // 👈 добавили
             };
 
             console.log('👉 payload:', payload); // Проверяем
@@ -186,6 +187,16 @@ const UserPage = () => {
                             <EditableRow label="Телефон:" value={formData.phone} isEditing={false} />
                         )}
                         <EditableRow label="Email:" name="email" value={formData.email} isEditing={isEditing} onChange={handleChange} />
+
+                        {/* 👇 Новое поле Telegram ID */}
+                        <EditableRow
+                            label="Введите id"
+                            name="telegram_id"
+                            value={formData.telegram_id}
+                            isEditing={isEditing}
+                            onChange={handleChange}
+                        />
+
                         <UserRow label="Дата создания:" value={formatDate(user.created_at)} />
                         <UserRow label="Обновлены данные:" value={formatDate(user.updated_at)} />
                     </Section>
