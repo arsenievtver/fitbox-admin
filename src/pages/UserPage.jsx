@@ -108,7 +108,7 @@ const UserPage = () => {
                 name: formData.name ?? '',
                 last_name: formData.last_name ?? '',
                 father_name: formData.father_name ?? '',
-                date_of_birth: formData.date_of_birth ?? '',
+                ...(formData.date_of_birth ? { date_of_birth: formData.date_of_birth } : {}), // только если есть
                 gender: formData.gender?.value || '',
                 telegram_id: formData.telegram_id ?? '',   // 👈 добавили
             };
