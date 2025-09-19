@@ -4,9 +4,10 @@ import { GetallusersUrl, postBookingAdminsUrl } from '../../helpers/constants';
 import useApi from '../../hooks/useApi.hook';
 import ModalBase from './ModalBase.jsx';
 import ButtonMy from "../Buttons/ButtonMy.jsx";
+import dayjs from 'dayjs';
 import './BookingModal.css'
 
-const BookingModal = ({ isOpen, onClose, onSubmit, slotId }) => {
+const BookingModal = ({ isOpen, onClose, onSubmit, slot }) => { // передаём весь объект slot
 	const api = useApi();
 	const [users, setUsers] = useState([]);
 	const [selectedUser, setSelectedUser] = useState(null);
@@ -14,22 +15,16 @@ const BookingModal = ({ isOpen, onClose, onSubmit, slotId }) => {
 	useEffect(() => {
 		if (!isOpen) return;
 
-		const fetchUsers = async () => {
+		(async () => {
 			try {
 				const { data } = await api.get(GetallusersUrl);
-				console.log('Получены пользователи:', data);
-				if (Array.isArray(data)) {
-					setUsers(data);
-				} else {
-					console.warn('Получен не массив пользователей:', data);
-					setUsers([]);
-				}
-			} catch (error) {
-				console.error('Ошибка загрузки пользователей:', error);
+				if (Array.isArray(data)) setUsers(data);
+				else setUsers([]);
+			} catch (err) {
+				console.error('Ошибка загрузки пользователей:', err);
 				setUsers([]);
 			}
-		};
-		fetchUsers();
+		})();
 	}, [isOpen, api]);
 
 	const handleUserChange = option => setSelectedUser(option);
@@ -43,21 +38,48 @@ const BookingModal = ({ isOpen, onClose, onSubmit, slotId }) => {
 		}
 
 		try {
-			await api.post(postBookingAdminsUrl, {
+			const response = await api.post(postBookingAdminsUrl, {
 				user_id: selectedUser.value,
-				slot_id: slotId,
+				slot_id: slot.id,
 				created_at: new Date().toISOString(),
 				source_record: 'администратор'
 			});
-			alert('Пользователь успешно записан!');
-			onSubmit && onSubmit(); // если передан — можно обновить слоты
-			onClose(true);
+
+			if (response.status === 201) {
+				const fullUser = users.find(u => u.id === selectedUser.value);
+
+				if (fullUser?.telegram_id && slot?.time) {
+					const dateStr = dayjs(slot.time).format("DD.MM.YY");
+					const timeStr = dayjs(slot.time).format("HH:mm");
+
+					const message = `✅ Вы успешно записаны на тренировку!\nЖдем Вас ${dateStr} в ${timeStr} 🥊\n<i>Чтобы отменить запись — зайдите в приложении во вкладку "Пользователь (👤)" → "Мои Записи"</i>`;
+
+					try {
+						await fetch(`https://api.telegram.org/bot7728171720:AAGyOYHnvnwScbctXvaYu2p45rKQRU_T_Ik/sendMessage`, {
+							method: "POST",
+							headers: { "Content-Type": "application/json" },
+							body: JSON.stringify({
+								chat_id: fullUser.telegram_id,
+								text: message,
+								parse_mode: "HTML"
+							}),
+						});
+					} catch (err) {
+						console.error("Ошибка при отправке сообщения в Telegram:", err);
+					}
+				}
+
+				alert('Пользователь успешно записан!');
+				onSubmit && onSubmit();
+				onClose(true);
+			} else {
+				alert('Ошибка: запись не прошла.');
+			}
 		} catch (err) {
 			console.error('Ошибка при записи пользователя:', err);
 			alert('Ошибка при записи пользователя');
 		}
 	};
-
 
 	if (!isOpen) return null;
 

@@ -277,10 +277,9 @@ const SchedulePage = () => {
 
 					{modalTime && selectedSlot && (
 						<BookingModal
-							time={modalTime}
 							isOpen={!!modalTime}
 							onClose={closeBookingModal}
-							slotId={selectedSlot.id}
+							slot={selectedSlot}          // передаём весь объект слота
 							onSubmit={async () => {
 								// 1. Обновляем все слоты
 								const freshSlots = await fetchSlots();
@@ -292,28 +291,26 @@ const SchedulePage = () => {
 									// 3. Обновляем selectedSlot, чтобы перерисовать таблицу слотов
 									setSelectedSlot(updatedSlot);
 
-									// 4. Обновляем список записавшихся — ИСПОЛЬЗУЕМ ПОЛУЧЕННЫЙ SLOT
+									// 4. Обновляем список записавшихся — используем полученный SLOT
 									await refreshBookedUsers(updatedSlot);
 
-									// 5. Обновляем daySlots — чтобы таблица слотов (всего дня) тоже обновилась
+									// 5. Обновляем daySlots — чтобы таблица слотов дня тоже обновилась
 									const start = new Date(selectedDate);
 									start.setHours(0, 0, 0, 0);
 									const end = new Date(selectedDate);
 									end.setHours(23, 59, 59, 999);
-									const startISO = start.toISOString();
-									const endISO = end.toISOString();
 
 									try {
-										const { data } = await api.get(getSlotsFilterUrl(startISO, endISO));
+										const { data } = await api.get(getSlotsFilterUrl(start.toISOString(), end.toISOString()));
 										setDaySlots(data);
 									} catch (e) {
 										console.error("Ошибка при обновлении таблицы слотов дня", e);
 									}
 								}
 							}}
-
 						/>
 					)}
+
 
 					{selectedSlot && bookedUsers.length > 0 && (
 						<>
